@@ -93,9 +93,11 @@
       data-brief-completed="{% if brief.status == brief.Status.COMPLETED %}1{% else %}0{% endif %}"
       data-autosave-url="{% url 'briefs:brief_autosave' brief.public_uuid %}"
     >
+      {% if logo_url %}
       <div class="logo-wrap">
-        <img src="{% static 'logo.png' %}" alt="Logo" />
+        <img src="{{ logo_url }}" alt="Logo" />
       </div>
+      {% endif %}
       <div class="content">
       <header class="brief-header">
         <h1 class="brief-title">{{ brief.title }}</h1>

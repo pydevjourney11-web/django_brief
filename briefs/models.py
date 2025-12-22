@@ -4,8 +4,8 @@ from django.db import models
 
 
 class TimeStampedModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
 
     class Meta:
         abstract = True
@@ -16,13 +16,32 @@ class Brief(TimeStampedModel):
         DRAFT = "draft", "Черновик"
         COMPLETED = "completed", "Завершён"
 
-    public_uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    webhook_url = models.URLField(blank=True)
-    is_template = models.BooleanField(default=False)
-    status = models.CharField(max_length=16, choices=Status.choices, default=Status.DRAFT)
-    completed_at = models.DateTimeField(null=True, blank=True)
+    public_uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        verbose_name="Публичный UUID",
+        help_text="Уникальная публичная ссылка для заполнения брифа",
+    )
+    title = models.CharField(max_length=255, verbose_name="Название")
+    description = models.TextField(blank=True, verbose_name="Описание")
+    webhook_url = models.URLField(
+        blank=True,
+        verbose_name="URL вебхука",
+        help_text="Адрес, на который отправятся данные после отправки брифа",
+    )
+    is_template = models.BooleanField(
+        default=False,
+        verbose_name="Шаблон",
+        help_text="Отметьте, если этот бриф используется как шаблон",
+    )
+    status = models.CharField(
+        max_length=16,
+        choices=Status.choices,
+        default=Status.DRAFT,
+        verbose_name="Статус",
+    )
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name="Дата завершения")
 
     source_template = models.ForeignKey(
         "self",
@@ -30,23 +49,28 @@ class Brief(TimeStampedModel):
         null=True,
         blank=True,
         related_name="derived_briefs",
+        verbose_name="Исходный шаблон",
     )
 
     class Meta:
         ordering = ("-created_at",)
+        verbose_name = "Бриф"
+        verbose_name_plural = "Брифы"
 
     def __str__(self) -> str:
         return self.title
 
 
 class BriefBlock(TimeStampedModel):
-    brief = models.ForeignKey(Brief, on_delete=models.CASCADE, related_name="blocks")
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    position = models.PositiveIntegerField(default=0)
+    brief = models.ForeignKey(Brief, on_delete=models.CASCADE, related_name="blocks", verbose_name="Бриф")
+    title = models.CharField(max_length=255, verbose_name="Заголовок")
+    description = models.TextField(blank=True, verbose_name="Описание")
+    position = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:
         ordering = ("position", "id")
+        verbose_name = "Блок"
+        verbose_name_plural = "Блоки"
         constraints = [
             models.UniqueConstraint(
                 fields=("brief", "position"),
@@ -66,17 +90,28 @@ class BriefQuestion(TimeStampedModel):
         FLOAT = "float", "Число"
         SELECT = "select", "Выбор из списка"
 
-    block = models.ForeignKey(BriefBlock, on_delete=models.CASCADE, related_name="questions")
-    name = models.SlugField(max_length=128)
-    type = models.CharField(max_length=16, choices=QuestionType.choices)
-    label = models.CharField(max_length=255)
-    placeholder = models.CharField(max_length=255, blank=True)
-    default_value = models.CharField(max_length=255, null=True, blank=True)
-    webhook_variable_name = models.SlugField(max_length=128, blank=True)
-    position = models.PositiveIntegerField(default=0)
+    block = models.ForeignKey(BriefBlock, on_delete=models.CASCADE, related_name="questions", verbose_name="Блок")
+    name = models.SlugField(
+        max_length=128,
+        verbose_name="Системное имя",
+        help_text="Латинское имя для связи и экспорта (slug)",
+    )
+    type = models.CharField(max_length=16, choices=QuestionType.choices, verbose_name="Тип вопроса")
+    label = models.CharField(max_length=255, verbose_name="Текст вопроса")
+    placeholder = models.CharField(max_length=255, blank=True, verbose_name="Плейсхолдер")
+    default_value = models.CharField(max_length=255, null=True, blank=True, verbose_name="Значение по умолчанию")
+    webhook_variable_name = models.SlugField(
+        max_length=128,
+        blank=True,
+        verbose_name="Имя переменной для вебхука",
+        help_text="Ключ поля в JSON при отправке вебхука",
+    )
+    position = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:
         ordering = ("position", "id")
+        verbose_name = "Вопрос"
+        verbose_name_plural = "Вопросы"
         constraints = [
             models.UniqueConstraint(
                 fields=("block", "position"),
@@ -97,13 +132,16 @@ class BriefQuestionOption(TimeStampedModel):
         BriefQuestion,
         on_delete=models.CASCADE,
         related_name="options",
+        verbose_name="Вопрос",
     )
-    value = models.CharField(max_length=255)
-    label = models.CharField(max_length=255)
-    position = models.PositiveIntegerField(default=0)
+    value = models.CharField(max_length=255, verbose_name="Значение")
+    label = models.CharField(max_length=255, verbose_name="Отображаемый текст")
+    position = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:
         ordering = ("position", "id")
+        verbose_name = "Опция"
+        verbose_name_plural = "Опции"
         constraints = [
             models.UniqueConstraint(
                 fields=("question", "position"),
@@ -120,11 +158,13 @@ class BriefQuestionOption(TimeStampedModel):
 
 
 class BriefAnswer(TimeStampedModel):
-    brief = models.ForeignKey(Brief, on_delete=models.CASCADE, related_name="answers")
-    question = models.ForeignKey(BriefQuestion, on_delete=models.CASCADE, related_name="answers")
-    value = models.TextField(null=True, blank=True)
+    brief = models.ForeignKey(Brief, on_delete=models.CASCADE, related_name="answers", verbose_name="Бриф")
+    question = models.ForeignKey(BriefQuestion, on_delete=models.CASCADE, related_name="answers", verbose_name="Вопрос")
+    value = models.TextField(null=True, blank=True, verbose_name="Ответ")
 
     class Meta:
+        verbose_name = "Ответ"
+        verbose_name_plural = "Ответы"
         constraints = [
             models.UniqueConstraint(
                 fields=("brief", "question"),

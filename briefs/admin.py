@@ -10,6 +10,10 @@ from .models import (
     BriefQuestionOption,
 )
 
+admin.site.site_header = "Управление брифами"
+admin.site.site_title = "Админка брифов"
+admin.site.index_title = "Главная админки"
+
 
 class BriefBlockInline(admin.TabularInline):
     model = BriefBlock
@@ -35,6 +39,41 @@ class BriefAdmin(admin.ModelAdmin):
     list_filter = ("is_template", "status", "created_at")
     search_fields = ("title", "public_uuid")
     readonly_fields = ("public_uuid", "created_at", "updated_at", "completed_at")
+    empty_value_display = "—"
+
+    fieldsets = (
+        (
+            "Основное",
+            {
+                "fields": (
+                    "title",
+                    "description",
+                    "status",
+                    "is_template",
+                    "source_template",
+                )
+            },
+        ),
+        (
+            "Публичная ссылка",
+            {"fields": ("public_uuid",)},
+        ),
+        (
+            "Автоматизация",
+            {"fields": ("webhook_url",), "classes": ("collapse",)},
+        ),
+        (
+            "Системные",
+            {
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                    "completed_at",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+    )
 
     inlines = (BriefBlockInline,)
 
@@ -69,8 +108,10 @@ class BriefBlockAdmin(admin.ModelAdmin):
     list_display = ("id", "brief", "position", "title")
     list_filter = ("brief",)
     search_fields = ("title", "brief__title")
+    list_editable = ("position",)
     ordering = ("brief", "position", "id")
     readonly_fields = ("created_at", "updated_at")
+    empty_value_display = "—"
 
     inlines = (BriefQuestionInline,)
 
@@ -87,8 +128,11 @@ class BriefQuestionAdmin(admin.ModelAdmin):
     list_display = ("id", "block", "position", "name", "type", "label")
     list_filter = ("type", "block__brief")
     search_fields = ("name", "label", "block__title", "block__brief__title")
+    list_editable = ("position",)
     ordering = ("block", "position", "id")
     readonly_fields = ("created_at", "updated_at")
+    empty_value_display = "—"
+    prepopulated_fields = {"name": ("label",)}
 
     inlines = (BriefQuestionOptionInline,)
 
@@ -100,6 +144,7 @@ class BriefQuestionOptionAdmin(admin.ModelAdmin):
     search_fields = ("value", "label", "question__label")
     ordering = ("question", "position", "id")
     readonly_fields = ("created_at", "updated_at")
+    empty_value_display = "—"
 
 
 @admin.register(BriefAnswer)
@@ -108,3 +153,4 @@ class BriefAnswerAdmin(admin.ModelAdmin):
     list_filter = ("brief", "question__type")
     search_fields = ("brief__title", "question__label", "question__name")
     readonly_fields = ("created_at", "updated_at")
+    empty_value_display = "—"

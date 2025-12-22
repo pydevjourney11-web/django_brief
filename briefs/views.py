@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 from .models import Brief, BriefAnswer, BriefBlock, BriefQuestion, BriefQuestionOption
 from .services import clone_brief, send_brief_webhook_async
@@ -122,6 +123,14 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         BriefAnswer.objects.filter(brief=brief).values_list("question_id", "value")
     )
 
+    # Safe logo URL: only if present in collected static files
+    logo_url = None
+    try:
+        if staticfiles_storage.exists("logo.png"):
+            logo_url = staticfiles_storage.url("logo.png")
+    except Exception:
+        logo_url = None
+
     return render(
         request,
         "briefs/fill_brief.html",
@@ -129,6 +138,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "brief": brief,
             "blocks": blocks,
             "answers_by_question_id": answers_by_question_id,
+            "logo_url": logo_url,
         },
     )
 
