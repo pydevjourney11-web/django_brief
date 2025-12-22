@@ -97,6 +97,7 @@ class BriefQuestion(TimeStampedModel):
         help_text="Латинское имя для связи и экспорта (slug)",
     )
     type = models.CharField(max_length=16, choices=QuestionType.choices, verbose_name="Тип вопроса")
+    is_multiple = models.BooleanField(default=False, verbose_name="Множественный выбор")
     label = models.CharField(max_length=255, verbose_name="Текст вопроса")
     placeholder = models.CharField(max_length=255, blank=True, verbose_name="Плейсхолдер")
     default_value = models.CharField(max_length=255, null=True, blank=True, verbose_name="Значение по умолчанию")
@@ -136,6 +137,7 @@ class BriefQuestionOption(TimeStampedModel):
     )
     value = models.CharField(max_length=255, verbose_name="Значение")
     label = models.CharField(max_length=255, verbose_name="Отображаемый текст")
+    description = models.TextField(blank=True, verbose_name="Пояснение")
     position = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:

@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
-import dj_database_url
+try:
+    import dj_database_url as _dj_database_url
+except Exception:
+    _dj_database_url = None
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,6 +20,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "briefs",
 ]
+if DEBUG:
+    INSTALLED_APPS.append("django_browser_reload")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -29,6 +34,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+if DEBUG:
+    MIDDLEWARE.insert(5, "django_browser_reload.middleware.BrowserReloadMiddleware")
 
 ROOT_URLCONF = "brief_project.urls"
 
@@ -64,11 +71,11 @@ DATABASES = {
 
 # Если задан DATABASE_URL (например, на Render/Heroku), используем его
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
+if DATABASE_URL and _dj_database_url is not None:
     try:
         # Пробуем распарсить только если значение похоже на URL со схемой
         if "://" in DATABASE_URL and not DATABASE_URL.startswith("://"):
-            DATABASES["default"] = dj_database_url.parse(
+            DATABASES["default"] = _dj_database_url.parse(
                 DATABASE_URL, conn_max_age=600, ssl_require=False
             )
     except Exception:
@@ -97,11 +104,11 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    BASE_DIR / "Img",
-]
+STATICFILES_DIRS = [p for p in [BASE_DIR / "static", BASE_DIR / "Img", BASE_DIR / "img"] if p.exists()]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Trusted origins for CSRF (e.g., https://your-service.onrender.com)
+CSRF_TRUSTED_ORIGINS = [o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

@@ -11,6 +11,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
 
 from .models import Brief, BriefAnswer, BriefBlock, BriefQuestion, BriefQuestionOption
 from .services import clone_brief, send_brief_webhook_async
@@ -208,7 +210,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             header_questions[q.name] = q
             header_question_ids.append(q.id)
 
-    # Safe logo URL: probe several common filenames
+    # Safe logo URL: probe several common filenames (use finders for dev)
     logo_url = None
     for candidate in [
         "logo.png",
@@ -216,8 +218,14 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         "Логотип без фона 2.png",
         "img/logo.png",
         "Img/logo.png",
+        "img/Логотип без фона 2.png",
+        "Img/Логотип без фона 2.png",
     ]:
         try:
+            if finders.find(candidate):
+                logo_url = static(candidate)
+                break
+            # Fallback to storage if running with collected statics
             if staticfiles_storage.exists(candidate):
                 logo_url = staticfiles_storage.url(candidate)
                 break
@@ -231,12 +239,30 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "Img/icons/user.svg",
             "icons/user.png",
             "Img/icons/user.png",
+            "img/icons/user-svgrepo-com 2.svg",
+            "Img/icons/user-svgrepo-com 2.svg",
+            "img/icons/user-svgrepo-com 2.png",
+            "Img/icons/user-svgrepo-com 2.png",
+            "Img/icons/user-svgrepo-com 1.png",
+            "img/icons/user-svgrepo-com 1.png",
+            "Img/user-svgrepo-com 1.png",
+            "img/user-svgrepo-com 1.png",
         ],
         "phones": [
             "icons/phone.svg",
             "Img/icons/phone.svg",
             "icons/phone.png",
             "Img/icons/phone.png",
+            "img/icons/phone-svgrepo-com 2.svg",
+            "Img/icons/phone-svgrepo-com 2.svg",
+            "img/icons/phone-svgrepo-com 2.png",
+            "Img/icons/phone-svgrepo-com 2.png",
+            "Img/icons/user-svgrepo-com 1.png",
+            "img/icons/user-svgrepo-com 1.png",
+            "Img/phone-svgrepo-com 1.png",
+            "img/phone-svgrepo-com 1.png",
+            "Img/user-svgrepo-com 1.png",
+            "img/user-svgrepo-com 1.png",
         ],
         "email": [
             "icons/mail.svg",
@@ -245,6 +271,16 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "Img/icons/email.svg",
             "icons/mail.png",
             "Img/icons/mail.png",
+            "img/icons/mail-svgrepo-com 2.svg",
+            "Img/icons/mail-svgrepo-com 2.svg",
+            "img/icons/mail-svgrepo-com 2.png",
+            "Img/icons/mail-svgrepo-com 2.png",
+            "Img/icons/mail-svgrepo-com 1.png",
+            "img/icons/mail-svgrepo-com 1.png",
+            "Img/mail-svgrepo-com 1.png",
+            "img/mail-svgrepo-com 1.png",
+            "Img/mail-svgrepo-com 2.png",
+            "img/mail-svgrepo-com 2.png",
         ],
         "current_site": [
             "icons/globe.svg",
@@ -253,25 +289,85 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "Img/icons/site.svg",
             "icons/globe.png",
             "Img/icons/globe.png",
+            "img/icons/web-svgrepo-com 1.svg",
+            "Img/icons/web-svgrepo-com 1.svg",
+            "img/icons/web-svgrepo-com 1.png",
+            "Img/icons/web-svgrepo-com 1.png",
+            "Img/web-svgrepo-com 1.png",
+            "img/web-svgrepo-com 1.png",
         ],
     }
     contact_icons = {}
     for key, paths in icon_candidates.items():
         for p in paths:
             try:
+                if finders.find(p):
+                    contact_icons[key] = static(p)
+                    break
                 if staticfiles_storage.exists(p):
                     contact_icons[key] = staticfiles_storage.url(p)
                     break
             except Exception:
                 continue
 
+    # Determine grid columns for each block (short questions per row)
+    block_cols = {}
+    multiple_select_ids = set()
+    for block in blocks:
+        short_count = 0
+        for q in block.questions.all():
+            if q.id in header_question_ids:
+                continue
+            if q.type == BriefQuestion.QuestionType.TEXT:
+                continue  # full width
+            if q.type == BriefQuestion.QuestionType.SELECT and getattr(q, "is_multiple", False):
+                multiple_select_ids.add(q.id)
+            short_count += 1
+        cols = 1
+        if short_count >= 6:
+            cols = 3
+        elif short_count >= 4:
+            cols = 2
+        block_cols[block.id] = cols
+
+    # Parse stored JSON arrays for multiple-select questions
+    for qid in list(answers_by_question_id.keys()):
+        if qid in multiple_select_ids:
+            raw = answers_by_question_id.get(qid)
+            if isinstance(raw, str) and raw:
+                try:
+                    parsed = json.loads(raw)
+                    answers_by_question_id[qid] = parsed
+                except Exception:
+                    pass
+
     # Fixed header title/subtitle (can be adjusted later from settings)
     header_title = "Бриф"
-    header_subtitle = "на создание сайта и контекстной рекламы"
+    header_subtitle = "на создание сайта\nи контекстной рекламы"
     header_description = "Данный опросный лист поможет более четко понять цели и задачи контекстной рекламы."
 
     # Submitted/success state flag for rendering a success banner/block
     is_submitted = (request.GET.get("submitted") == "1") or (brief.status == Brief.Status.COMPLETED)
+
+    # Calendar icon for date input (optional asset in static/Img/img)
+    calendar_icon_url = None
+    for p in [
+        "calendar-minimalistic-svgrepo-com 1.svg",
+        "calendar-minimalistic-svgrepo-com 1.png",
+        "img/calendar-minimalistic-svgrepo-com 1.svg",
+        "img/calendar-minimalistic-svgrepo-com 1.png",
+        "Img/calendar-minimalistic-svgrepo-com 1.svg",
+        "Img/calendar-minimalistic-svgrepo-com 1.png",
+    ]:
+        try:
+            if finders.find(p):
+                calendar_icon_url = static(p)
+                break
+            if staticfiles_storage.exists(p):
+                calendar_icon_url = staticfiles_storage.url(p)
+                break
+        except Exception:
+            continue
 
     return render(
         request,
@@ -279,6 +375,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         {
             "brief": brief,
             "blocks": blocks,
+            "block_cols": block_cols,
             "answers_by_question_id": answers_by_question_id,
             "header_questions": header_questions,
             "header_question_ids": header_question_ids,
@@ -288,6 +385,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "header_subtitle": header_subtitle,
             "header_description": header_description,
             "is_submitted": is_submitted,
+            "calendar_icon_url": calendar_icon_url,
         },
     )
 
@@ -346,14 +444,35 @@ def brief_autosave(request: HttpRequest, public_uuid) -> JsonResponse:
                 return JsonResponse({"error": "Ожидается число"}, status=400)
 
     elif question.type == BriefQuestion.QuestionType.SELECT:
-        if normalized is None:
-            pass
+        if getattr(question, "is_multiple", False):
+            if normalized is None:
+                pass
+            else:
+                # Expect list of values; if string, try to parse JSON
+                if isinstance(normalized, str):
+                    try:
+                        normalized = json.loads(normalized)
+                    except Exception:
+                        # fall back to single item list
+                        normalized = [normalized]
+                if not isinstance(normalized, list):
+                    return JsonResponse({"error": "Ожидается список значений"}, status=400)
+                # Validate values exist among options
+                allowed = set(BriefQuestionOption.objects.filter(question=question).values_list("value", flat=True))
+                for v in list(normalized):
+                    if v not in allowed:
+                        return JsonResponse({"error": f"Некорректный вариант: {v}"}, status=400)
+                # Store as JSON string
+                normalized = json.dumps(normalized, ensure_ascii=False)
         else:
-            if not isinstance(normalized, str):
-                normalized = str(normalized)
-            exists = BriefQuestionOption.objects.filter(question=question, value=normalized).exists()
-            if not exists:
-                return JsonResponse({"error": "Некорректный вариант"}, status=400)
+            if normalized is None:
+                pass
+            else:
+                if not isinstance(normalized, str):
+                    normalized = str(normalized)
+                exists = BriefQuestionOption.objects.filter(question=question, value=normalized).exists()
+                if not exists:
+                    return JsonResponse({"error": "Некорректный вариант"}, status=400)
 
     else:
         return JsonResponse({"error": "Неподдерживаемый тип вопроса"}, status=400)

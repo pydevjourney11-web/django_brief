@@ -26,7 +26,7 @@
         --radius-sm:10px;
         --container:1410px;
         --gap-block:30px;
-        --gap-fields:30px;
+        --gap-fields:32px;
       }
 
       html,body{height:100%;}
@@ -38,47 +38,66 @@
       .content { flex: 1 0 auto; }
 
       .brief-header { margin-bottom: 20px; }
-      .header-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+      .header-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; }
       .header-left{ flex:1 1 auto; min-width:0; max-width:758px; }
-      .header-right{ flex:0 0 260px; display:flex; justify-content:flex-end; }
+      .header-right{ flex:0 0 330px; display:flex; justify-content:flex-end; }
       .brief-title { margin: 0; line-height: 1.1; }
-      .title-row{ display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
-      .title-row .main{ display:inline-block; font-size: 50px; font-weight: 800; color: #3B507D; margin:0; }
-      .title-row .sub{ display:inline-block; font-size: 20px; font-weight: 600; color: #3B507D; white-space: pre-wrap; }
+      .title-row{ display:flex; align-items:center; gap:22px; flex-wrap:nowrap; max-width:758px; }
+      .title-row .main{ display:block; font-size: 50px; font-weight: 800; color: #3B507D; margin:0; white-space:nowrap; }
+      .title-row .sub{ display:block; font-size: 20px; font-weight: 600; color: #3B507D; white-space: normal; line-height: 1.1; max-width: 560px; position:relative; top:2px; }
       .brief-lead{ margin-top: 20px; font-size: 16px; font-weight: 400; color: #3B507D; }
-      .date-input{ width: 330px; min-width:330px; height: 50px; padding: 16px; border:1px solid var(--input-border); border-radius: 4px; background:#fff; color:#3B507D; background-repeat:no-repeat; background-position:12px 50%; padding-left:40px; }
-      .date-input{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'><path d='M10.5 16.5H7.5C4.67157 16.5 3.25736 16.5 2.37868 15.6213C1.5 14.7427 1.5 13.3284 1.5 10.5V9C1.5 6.17157 1.5 4.75736 2.37868 3.87868C3.25736 3 4.67157 3 7.5 3H10.5C13.3284 3 14.7427 3 15.6213 3.87868C16.5 4.75736 16.5 6.17157 16.5 9V10.5C16.5 13.3284 16.5 14.7427 15.6213 15.6213C15.1314 16.1112 14.4751 16.328 13.5 16.4239' stroke='%233B507D' stroke-linecap='round'/><path d='M5.25 3V1.875' stroke='%233B507D' stroke-linecap='round'/><path d='M12.75 3V1.875' stroke='%233B507D' stroke-linecap='round'/><path d='M16.125 6.75H12.4688H8.0625M1.5 6.75H4.40625' stroke='%233B507D' stroke-linecap='round'/></svg>"); }
+      .date-wrap{ position:relative; width:330px; min-width:330px; }
+      .date-input{ position:relative; z-index:1; width: 330px; min-width:330px; height: 50px; padding: 16px; padding-left:48px; padding-right:16px; border:1px solid var(--input-border); border-radius: 4px; background:#fff; color:#3B507D; font-size:13px; text-align:right; }
+      .date-icon{ position:absolute; z-index:2; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; object-fit:contain; pointer-events:none; }
       .status { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; margin-top: 12px; }
       .status-draft { background: #e9f2ff; color: #163b6b; }
       .status-completed { background: #e8fff2; color: #046c4e; }
 
-      .logo-wrap{ display:flex; justify-content:center; align-items:center; margin-bottom: 12px; }
-      .logo-wrap img{ max-height:75px; height:auto; width:auto; }
+      .logo-wrap{ display:flex; justify-content:center; align-items:center; margin-top:30px; margin-bottom: 12px; }
+      .logo-wrap img{ width:152.4725px; height:75px; object-fit:contain; }
 
-      .block { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 18px; margin: var(--gap-block) 0; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
-      .block-title { margin: 0 0 16px 0; font-size: 26px; font-weight: 800; color:#3B507D; }
+      .block { background: transparent; border: 0; border-radius: 0; padding: 18px 0; margin: var(--gap-block) 0; box-shadow: none; }
+      .block-title { margin: 0 0 16px 0; font-size: 26px; font-weight: 800; color:#3B507D; line-height:1; letter-spacing:0; }
       .block-desc { margin: 0 0 12px 0; color: var(--muted); white-space: pre-wrap; font-size: 13px; }
 
-      .fields-grid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--gap-fields); }
+      .fields-grid{ display:grid; grid-template-columns: 1fr; row-gap: var(--gap-fields); column-gap:30px; justify-content: space-between; }
+      .fields-grid[data-cols="2"]{ grid-template-columns: repeat(2, 690px); }
+      .fields-grid[data-cols="3"]{ grid-template-columns: repeat(3, 330px); }
+      .q-inner{ display:flex; flex-direction:column; gap:8px; }
       .header-contacts-grid{
         grid-template-columns: repeat(4, 330px);
         justify-content: space-between;
+        gap: 30px;
+        width:100%;
       }
       .q { margin: 0; }
       .q.q--full{ grid-column: 1 / -1; }
-      .q-label { display:block; font-weight: 400; margin-bottom: 16px; font-size: 16px; color:#3B507D; }
+      .q-label { display:block; font-weight: 400; margin-bottom: 8px; font-size: 16px; color:#3B507D; border:0; outline:0; line-height:1; letter-spacing:0; }
+      .header-contacts-grid .q-label{ display:none; border:none; }
+      .header-contacts-grid .input-wrap{ position:relative; }
+      .header-contacts-grid .input-wrap .q-icon{ position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; pointer-events:none; z-index:2; }
+      .header-contacts-grid .input-wrap input{ position:relative; z-index:1; padding-left:42px !important; }
       .q-help { color: var(--muted); font-size: 12px; margin-top: 6px; }
-      .with-icon{ background-repeat:no-repeat; background-position:12px 50%; background-size:18px 18px; padding-left:40px !important; }
+      /* Checkbox list for SELECT (multiple) with right-side description */
+      .check-list{ display:grid; gap:14px; }
+      .check-row{ display:grid; grid-template-columns: 22px 308px 1fr; column-gap:16px; align-items:start; padding:4px 0; cursor:pointer; }
+      .check-row input[type="checkbox"]{ width:22px; height:22px; border:1px solid var(--input-border); border-radius:4px; margin:0; }
+      .check-title{ font-size:13px; font-weight:600; opacity:.7; line-height:22px; color:#3B507D; }
+      .check-desc{ font-size:12px; color: var(--muted); line-height:20px; }
+      .with-icon{ background-repeat:no-repeat; background-position:16px 50%; background-size:18px 18px; padding-left:42px !important; }
       /* Header contacts input overrides (Frame 105) */
       .header-contacts-grid input[type="text"],
       .header-contacts-grid input[type="email"],
       .header-contacts-grid input[type="number"]{
-        height:50px; padding:16px; border-radius:4px; font-size:13px; color:#3B507D;
+        height:48px; padding:16px; border-radius:4px; font-size:13px; color:#3B507D; appearance:none; -webkit-appearance:none;
       }
+      .header-contacts-grid input:focus{ outline:none; border-color: var(--input-border); box-shadow:none; }
+      .header-contacts-grid input:invalid,
+      .header-contacts-grid input:focus:invalid{ box-shadow:none; outline:0; border-color: var(--input-border); }
       .header-contacts-grid input::placeholder{ color: rgba(59,80,125,.5); }
       input[type="text"], input[type="number"], textarea, select {
         width: 100%; box-sizing: border-box; padding: 16px;
-        height: 50px;
+        height: 48px;
         border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; background: #fff; color: var(--text);
       }
       input:focus, textarea:focus, select:focus { outline: none; border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(154,180,255,.25); }
@@ -107,8 +126,25 @@
         .title-row .main{ font-size:28px; }
         .title-row .sub{ font-size:16px; }
         .block{ padding:14px; }
-        .fields-grid{ grid-template-columns: 1fr; gap:16px; }
+        .fields-grid{ grid-template-columns: 1fr !important; row-gap:16px; column-gap:0; justify-content: initial; }
         .header-contacts-grid{ grid-template-columns: 1fr; }
+        /* Mobile adaptation for checkbox rows: title above description */
+        .check-row{ grid-template-columns:22px 1fr; }
+        .check-title{ grid-column:2 / -1; }
+        .check-desc{ grid-column:2 / -1; margin-top:4px; }
+      }
+
+      /* Submitted modal */
+      .submitted-overlay{ position:fixed; inset:0; background:rgba(15,27,45,.45); z-index:1000; display:none; }
+      .submitted-dialog{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:540px; height:400px; background:#FFFFFF; border:1px solid var(--card-border); border-radius:4px; z-index:1001; padding:50px 40px; box-sizing:border-box; text-align:center; display:none; }
+      .submitted-close{ position:absolute; top:12px; right:12px; background:transparent; border:0; font-size:20px; line-height:1; cursor:pointer; color:#3B507D; opacity:.7; }
+      .submitted-icon{ width:80px; height:80px; object-fit:contain; display:block; margin:0 auto 12px; }
+      .submitted-title{ margin:12px 0 8px; font-size:26px; font-weight:800; color:#3B507D; line-height:1; letter-spacing:0; }
+      .submitted-text{ margin:0 auto 20px; font-size:13px; line-height:22px; color:#3B507D; opacity:.7; max-width:360px; white-space:pre-line; }
+      .submitted-actions{ display:flex; justify-content:center; }
+      .btn-back{ width:220px; height:48px; border-radius:40px; padding:16px; background:#3B507D; color:#fff; font-weight:600; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+      @media (max-width: 640px){
+        .submitted-dialog{ width:calc(100% - 32px); height:auto; padding:24px 16px; }
       }
     </style>
   </head>
@@ -129,103 +165,104 @@
       <header class="brief-header">
         <div class="header-row">
           <div class="header-left">
-            <h1 class="brief-title">
-              <span class="main">{{ header_title|default:brief.title }}</span>
+            <div class="title-row">
+              <h1 class="main">{{ header_title|default:brief.title }}</h1>
               {% if header_subtitle %}
-                <span class="sub">{{ header_subtitle }}</span>
+                <div class="sub">{{ header_subtitle|linebreaksbr }}</div>
               {% elif brief.description %}
-                <span class="sub">{{ brief.description }}</span>
+                <div class="sub">{{ brief.description|linebreaksbr }}</div>
               {% endif %}
-            </h1>
+            </div>
           </div>
           <div class="header-right">
-            <input class="date-input" type="text" readonly value="{{ brief.created_at|date:"d.m.Y" }}" />
+            <div class="date-wrap">
+              {% if calendar_icon_url %}
+                <img class="date-icon" src="{{ calendar_icon_url }}" alt="" />
+              {% else %}
+                <svg class="date-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.5 16.5H7.5C4.67157 16.5 3.25736 16.5 2.37868 15.6213C1.5 14.7427 1.5 13.3284 1.5 10.5V9C1.5 6.17157 1.5 4.75736 2.37868 3.87868C3.25736 3 4.67157 3 7.5 3H10.5C13.3284 3 14.7427 3 15.6213 3.87868C16.5 4.75736 16.5 6.17157 16.5 9V10.5C16.5 13.3284 16.5 14.7427 15.6213 15.6213C15.1314 16.1112 14.4751 16.328 13.5 16.4239" stroke="#3B507D" stroke-linecap="round"/><path d="M5.25 3V1.875" stroke="#3B507D" stroke-linecap="round"/><path d="M12.75 3V1.875" stroke="#3B507D" stroke-linecap="round"/><path d="M16.125 6.75H12.4688H8.0625M1.5 6.75H4.40625" stroke="#3B507D" stroke-linecap="round"/></svg>
+              {% endif %}
+              <input class="date-input" type="text" readonly value="{{ brief.created_at|date:"d.m.Y" }}" />
+            </div>
           </div>
         </div>
 
-        {% if brief.status == brief.Status.COMPLETED %}
-          <div class="status status-completed">Завершён</div>
-        {% else %}
-          <div class="status status-draft">Черновик</div>
-        {% endif %}
+        {# Статус скрыт по требованию #}
         {% if header_description %}
           <div class="brief-lead">{{ header_description }}</div>
         {% endif %}
       </header>
 
-      {% if header_questions.fio or header_questions.phones or header_questions.email or header_questions.current_site %}
       <section class="block">
         <div class="fields-grid header-contacts-grid">
-          {% if header_questions.fio %}
+          {# ФИО #}
           <div class="q">
-            <label class="q-label" for="q-{{ header_questions.fio.id }}">{{ header_questions.fio.label }}</label>
-            <input
-              id="q-{{ header_questions.fio.id }}"
-              type="text"
-              data-question-id="{{ header_questions.fio.id }}"
-              data-question-type="{{ header_questions.fio.type }}"
-              placeholder="{{ header_questions.fio.placeholder }}"
-              value="{{ answers_by_question_id|get_item:header_questions.fio.id|default_if_none:header_questions.fio.default_value|default_if_none:'' }}"
-              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
-              class="with-icon"
-              {% if contact_icons.fio %}style="background-image:url('{{ contact_icons.fio }}');"{% endif %}
-            />
+            <label class="q-label" {% if header_questions.fio %}for="q-{{ header_questions.fio.id }}"{% endif %}>{{ header_questions.fio.label|default:"Фамилия Имя Отчество" }}</label>
+            <div class="input-wrap">
+              {% if contact_icons.fio %}
+                <img class="q-icon" src="{{ contact_icons.fio }}" alt="" />
+              {% else %}
+                <img class="q-icon" src="{% static 'user-svgrepo-com 1.png' %}" alt="" />
+              {% endif %}
+              {% if header_questions.fio %}
+                <input id="q-{{ header_questions.fio.id }}" type="text" data-question-id="{{ header_questions.fio.id }}" data-question-type="{{ header_questions.fio.type }}" placeholder="{{ header_questions.fio.label }}" value="{{ answers_by_question_id|get_item:header_questions.fio.id|default_if_none:header_questions.fio.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
+              {% else %}
+                <input type="text" placeholder="Фамилия Имя Отчество" />
+              {% endif %}
+            </div>
           </div>
-          {% endif %}
 
-          {% if header_questions.phones %}
+          {# Телефоны #}
           <div class="q">
-            <label class="q-label" for="q-{{ header_questions.phones.id }}">{{ header_questions.phones.label }}</label>
-            <input
-              id="q-{{ header_questions.phones.id }}"
-              type="text"
-              data-question-id="{{ header_questions.phones.id }}"
-              data-question-type="{{ header_questions.phones.type }}"
-              placeholder="{{ header_questions.phones.placeholder }}"
-              value="{{ answers_by_question_id|get_item:header_questions.phones.id|default_if_none:header_questions.phones.default_value|default_if_none:'' }}"
-              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
-              class="with-icon"
-              {% if contact_icons.phones %}style="background-image:url('{{ contact_icons.phones }}');"{% endif %}
-            />
+            <label class="q-label" {% if header_questions.phones %}for="q-{{ header_questions.phones.id }}"{% endif %}>{{ header_questions.phones.label|default:"Телефоны" }}</label>
+            <div class="input-wrap">
+              {% if contact_icons.phones %}
+                <img class="q-icon" src="{{ contact_icons.phones }}" alt="" />
+              {% else %}
+                <img class="q-icon" src="{% static 'user-svgrepo-com 1.png' %}" alt="" />
+              {% endif %}
+              {% if header_questions.phones %}
+                <input id="q-{{ header_questions.phones.id }}" type="text" data-question-id="{{ header_questions.phones.id }}" data-question-type="{{ header_questions.phones.type }}" placeholder="{{ header_questions.phones.label }}" value="{{ answers_by_question_id|get_item:header_questions.phones.id|default_if_none:header_questions.phones.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
+              {% else %}
+                <input type="text" placeholder="Телефоны" />
+              {% endif %}
+            </div>
           </div>
-          {% endif %}
 
-          {% if header_questions.email %}
+          {# E-mail #}
           <div class="q">
-            <label class="q-label" for="q-{{ header_questions.email.id }}">{{ header_questions.email.label }}</label>
-            <input
-              id="q-{{ header_questions.email.id }}"
-              type="email"
-              data-question-id="{{ header_questions.email.id }}"
-              data-question-type="{{ header_questions.email.type }}"
-              placeholder="{{ header_questions.email.placeholder }}"
-              value="{{ answers_by_question_id|get_item:header_questions.email.id|default_if_none:header_questions.email.default_value|default_if_none:'' }}"
-              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
-              class="with-icon"
-              {% if contact_icons.email %}style="background-image:url('{{ contact_icons.email }}');"{% endif %}
-            />
+            <label class="q-label" {% if header_questions.email %}for="q-{{ header_questions.email.id }}"{% endif %}>{{ header_questions.email.label|default:"E-mail" }}</label>
+            <div class="input-wrap">
+              {% if contact_icons.email %}
+                <img class="q-icon" src="{{ contact_icons.email }}" alt="" />
+              {% else %}
+                <img class="q-icon" src="{% static 'mail-svgrepo-com 2.png' %}" alt="" />
+              {% endif %}
+              {% if header_questions.email %}
+                <input id="q-{{ header_questions.email.id }}" type="text" data-question-id="{{ header_questions.email.id }}" data-question-type="{{ header_questions.email.type }}" placeholder="{{ header_questions.email.label }}" value="{{ answers_by_question_id|get_item:header_questions.email.id|default_if_none:header_questions.email.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
+              {% else %}
+                <input type="text" placeholder="E-mail" />
+              {% endif %}
+            </div>
           </div>
-          {% endif %}
 
-          {% if header_questions.current_site %}
+          {# Текущий сайт #}
           <div class="q">
-            <label class="q-label" for="q-{{ header_questions.current_site.id }}">{{ header_questions.current_site.label }}</label>
-            <input
-              id="q-{{ header_questions.current_site.id }}"
-              type="text"
-              data-question-id="{{ header_questions.current_site.id }}"
-              data-question-type="{{ header_questions.current_site.type }}"
-              placeholder="{{ header_questions.current_site.placeholder }}"
-              value="{{ answers_by_question_id|get_item:header_questions.current_site.id|default_if_none:header_questions.current_site.default_value|default_if_none:'' }}"
-              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
-              class="with-icon"
-              {% if contact_icons.current_site %}style="background-image:url('{{ contact_icons.current_site }}');"{% endif %}
-            />
+            <label class="q-label" {% if header_questions.current_site %}for="q-{{ header_questions.current_site.id }}"{% endif %}>{{ header_questions.current_site.label|default:"Текущий сайт" }}</label>
+            <div class="input-wrap">
+              {% if contact_icons.current_site %}
+                <img class="q-icon" src="{{ contact_icons.current_site }}" alt="" />
+              {% else %}
+                <img class="q-icon" src="{% static 'web-svgrepo-com 1.png' %}" alt="" />
+              {% endif %}
+              {% if header_questions.current_site %}
+                <input id="q-{{ header_questions.current_site.id }}" type="text" data-question-id="{{ header_questions.current_site.id }}" data-question-type="{{ header_questions.current_site.type }}" placeholder="{{ header_questions.current_site.label }}" value="{{ answers_by_question_id|get_item:header_questions.current_site.id|default_if_none:header_questions.current_site.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
+              {% else %}
+                <input type="text" placeholder="Текущий сайт" />
+              {% endif %}
+            </div>
           </div>
-          {% endif %}
         </div>
       </section>
-      {% endif %}
 
       <div id="submittedNotice" class="notice">Форма отправлена. Спасибо!</div>
 
@@ -236,11 +273,12 @@
             <div class="block-desc">{{ block.description }}</div>
           {% endif %}
 
-          <div class="fields-grid">
+          <div class="fields-grid" data-cols="{{ block_cols|get_item:block.id }}">
           {% for q in block.questions.all %}
             {% if not q.id in header_question_ids %}
-            <div class="q {% if q.type == q.QuestionType.TEXT %}q--full{% endif %}">
-              <label class="q-label" for="q-{{ q.id }}">{{ q.label }}</label>
+            <div class="q {% if q.type == q.QuestionType.TEXT or q.is_multiple %}q--full{% endif %}">
+              <div class="q-inner">
+                <label class="q-label" for="q-{{ q.id }}">{{ q.label }}</label>
 
               {% if q.type == q.QuestionType.STRING %}
                 <input
@@ -287,24 +325,39 @@
                 />
 
               {% elif q.type == q.QuestionType.SELECT %}
-                <select
-                  id="q-{{ q.id }}"
-                  data-question-id="{{ q.id }}"
-                  data-question-type="{{ q.type }}"
-                  {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
-                >
-                  <option value="">-- выберите --</option>
+                {% if q.is_multiple %}
                   {% with current=answers_by_question_id|get_item:q.id|default_if_none:q.default_value %}
+                  <div class="check-list">
                     {% for opt in q.options.all %}
-                      <option value="{{ opt.value }}" {% if current == opt.value %}selected{% endif %}>{{ opt.label }}</option>
+                      <label class="check-row">
+                        <input type="checkbox" data-question-id="{{ q.id }}" data-question-type="{{ q.type }}" value="{{ opt.value }}" {% if current and opt.value in current %}checked{% endif %} {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
+                        <span class="check-title">{{ opt.label }}</span>
+                        {% if opt.description %}<span class="check-desc">{{ opt.description }}</span>{% endif %}
+                      </label>
                     {% endfor %}
+                  </div>
                   {% endwith %}
-                </select>
+                {% else %}
+                  <select
+                    id="q-{{ q.id }}"
+                    data-question-id="{{ q.id }}"
+                    data-question-type="{{ q.type }}"
+                    {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+                  >
+                    <option value="">-- выберите --</option>
+                    {% with current=answers_by_question_id|get_item:q.id|default_if_none:q.default_value %}
+                      {% for opt in q.options.all %}
+                        <option value="{{ opt.value }}" {% if current == opt.value %}selected{% endif %}>{{ opt.label }}</option>
+                      {% endfor %}
+                    {% endwith %}
+                  </select>
+                {% endif %}
               {% endif %}
 
               {% if q.placeholder %}
                 <div class="q-help">{{ q.placeholder }}</div>
               {% endif %}
+              </div>
             </div>
             {% endif %}
           {% endfor %}
@@ -331,6 +384,19 @@
       </div>
     </div>
 
+    <!-- Submitted modal -->
+    <div id="submittedOverlay" class="submitted-overlay"></div>
+    <div id="submittedDialog" class="submitted-dialog" role="dialog" aria-modal="true" aria-labelledby="submittedTitle">
+      <button type="button" class="submitted-close" aria-label="Закрыть">×</button>
+      <img class="submitted-icon" src="{% static 'send-paper-svgrepo-com 1.png' %}" alt="" />
+      <div id="submittedTitle" class="submitted-title">Бриф отправлен</div>
+      <div class="submitted-text">Мы свяжемся с вами в ближайшее время
+для уточнения деталей</div>
+      <div class="submitted-actions">
+        <a class="btn-back" href="/">Вернуться на главную</a>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
       // Vanilla JS: автосохранение после изменения поля (AJAX)
@@ -352,15 +418,34 @@
 
         const csrftoken = getCookie('csrftoken');
 
-        // Показ уведомления об отправке после редиректа ?submitted=1
-        (function showSubmittedBanner(){
+        // Показ модального окна об отправке после редиректа ?submitted=1
+        (function showSubmitted(){
           const params = new URLSearchParams(window.location.search);
-          if (params.get('submitted') === '1') {
-            const el = document.getElementById('submittedNotice');
-            if (el) {
-              el.classList.add('success');
-            }
-          }
+          const viaParam = params.get('submitted') === '1';
+          if (viaParam) openSubmittedModal();
+        })();
+
+        function openSubmittedModal(){
+          const overlay = document.getElementById('submittedOverlay');
+          const dialog = document.getElementById('submittedDialog');
+          if (!overlay || !dialog) return;
+          overlay.style.display = 'block';
+          dialog.style.display = 'block';
+        }
+        function closeSubmittedModal(){
+          const overlay = document.getElementById('submittedOverlay');
+          const dialog = document.getElementById('submittedDialog');
+          if (!overlay || !dialog) return;
+          overlay.style.display = 'none';
+          dialog.style.display = 'none';
+        }
+        (function wireModal(){
+          const overlay = document.getElementById('submittedOverlay');
+          const dialog = document.getElementById('submittedDialog');
+          const closeBtn = dialog ? dialog.querySelector('.submitted-close') : null;
+          if (overlay) overlay.addEventListener('click', closeSubmittedModal);
+          if (closeBtn) closeBtn.addEventListener('click', closeSubmittedModal);
+          document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeSubmittedModal(); });
         })();
 
         function setIndicator(text, cls) {
@@ -401,6 +486,12 @@
         }
 
         function getFieldValue(el) {
+          // For checkbox groups (SELECT is_multiple), collect all checked values for the same question
+          if (el.type === 'checkbox') {
+            const qid = el.getAttribute('data-question-id');
+            const boxes = document.querySelectorAll('input[type="checkbox"][data-question-id="' + qid + '"]:checked');
+            return Array.from(boxes).map((b) => b.value);
+          }
           if (el.tagName === 'SELECT') return el.value;
           return el.value;
         }

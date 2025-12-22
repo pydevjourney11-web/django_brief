@@ -118,6 +118,7 @@ class BriefQuestionInline(admin.TabularInline):
         "position",
         "name",
         "type",
+        "is_multiple",
         "label",
         "placeholder",
         "default_value",
@@ -142,13 +143,13 @@ class BriefBlockAdmin(admin.ModelAdmin):
 class BriefQuestionOptionInline(admin.TabularInline):
     model = BriefQuestionOption
     extra = 0
-    fields = ("position", "value", "label")
+    fields = ("position", "value", "label", "description")
     ordering = ("position", "id")
 
 
 @admin.register(BriefQuestion)
 class BriefQuestionAdmin(admin.ModelAdmin):
-    list_display = ("id", "block", "position", "name", "type", "label")
+    list_display = ("id", "block", "position", "name", "type", "is_multiple", "label")
     list_filter = ("type", "block__brief")
     search_fields = ("name", "label", "block__title", "block__brief__title")
     list_editable = ("position",)
@@ -162,9 +163,9 @@ class BriefQuestionAdmin(admin.ModelAdmin):
 
 @admin.register(BriefQuestionOption)
 class BriefQuestionOptionAdmin(admin.ModelAdmin):
-    list_display = ("id", "question", "position", "value", "label")
+    list_display = ("id", "question", "position", "value", "label", "description")
     list_filter = ("question__block__brief",)
-    search_fields = ("value", "label", "question__label")
+    search_fields = ("value", "label", "description", "question__label")
     ordering = ("question", "position", "id")
     readonly_fields = ("created_at", "updated_at")
     empty_value_display = "—"
