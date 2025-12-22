@@ -270,6 +270,9 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
     header_subtitle = "на создание сайта и контекстной рекламы"
     header_description = "Данный опросный лист поможет более четко понять цели и задачи контекстной рекламы."
 
+    # Submitted/success state flag for rendering a success banner/block
+    is_submitted = (request.GET.get("submitted") == "1") or (brief.status == Brief.Status.COMPLETED)
+
     return render(
         request,
         "briefs/fill_brief.html",
@@ -284,6 +287,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "header_title": header_title,
             "header_subtitle": header_subtitle,
             "header_description": header_description,
+            "is_submitted": is_submitted,
         },
     )
 

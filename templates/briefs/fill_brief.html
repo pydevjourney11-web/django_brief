@@ -39,12 +39,13 @@
 
       .brief-header { margin-bottom: 20px; }
       .header-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
-      .header-left{ flex:1 1 auto; min-width:0; }
+      .header-left{ flex:1 1 auto; min-width:0; max-width:758px; }
       .header-right{ flex:0 0 260px; display:flex; justify-content:flex-end; }
-      .brief-title { margin: 0 0 6px 0; line-height: 1.1; }
-      .brief-title .main{ display:block; font-size: 50px; font-weight: 800; color: #3B507D; }
-      .brief-title .sub{ display:block; font-size: 20px; font-weight: 600; color: #3B507D; white-space: pre-wrap; }
-      .brief-lead{ margin-top: 8px; font-size: 16px; font-weight: 400; color: #3B507D; }
+      .brief-title { margin: 0; line-height: 1.1; }
+      .title-row{ display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+      .title-row .main{ display:inline-block; font-size: 50px; font-weight: 800; color: #3B507D; margin:0; }
+      .title-row .sub{ display:inline-block; font-size: 20px; font-weight: 600; color: #3B507D; white-space: pre-wrap; }
+      .brief-lead{ margin-top: 20px; font-size: 16px; font-weight: 400; color: #3B507D; }
       .date-input{ width: 330px; min-width:330px; height: 50px; padding: 16px; border:1px solid var(--input-border); border-radius: 4px; background:#fff; color:#3B507D; background-repeat:no-repeat; background-position:12px 50%; padding-left:40px; }
       .date-input{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'><path d='M10.5 16.5H7.5C4.67157 16.5 3.25736 16.5 2.37868 15.6213C1.5 14.7427 1.5 13.3284 1.5 10.5V9C1.5 6.17157 1.5 4.75736 2.37868 3.87868C3.25736 3 4.67157 3 7.5 3H10.5C13.3284 3 14.7427 3 15.6213 3.87868C16.5 4.75736 16.5 6.17157 16.5 9V10.5C16.5 13.3284 16.5 14.7427 15.6213 15.6213C15.1314 16.1112 14.4751 16.328 13.5 16.4239' stroke='%233B507D' stroke-linecap='round'/><path d='M5.25 3V1.875' stroke='%233B507D' stroke-linecap='round'/><path d='M12.75 3V1.875' stroke='%233B507D' stroke-linecap='round'/><path d='M16.125 6.75H12.4688H8.0625M1.5 6.75H4.40625' stroke='%233B507D' stroke-linecap='round'/></svg>"); }
       .status { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; margin-top: 12px; }
@@ -103,7 +104,8 @@
 
       @media (max-width: 640px) {
         body{ padding:20px 14px; }
-        .brief-title{ font-size:18px; }
+        .title-row .main{ font-size:28px; }
+        .title-row .sub{ font-size:16px; }
         .block{ padding:14px; }
         .fields-grid{ grid-template-columns: 1fr; gap:16px; }
         .header-contacts-grid{ grid-template-columns: 1fr; }
