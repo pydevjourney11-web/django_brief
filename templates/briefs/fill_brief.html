@@ -35,8 +35,12 @@
       .content { flex: 1 0 auto; }
 
       .brief-header { margin-bottom: 20px; }
+      .header-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+      .header-left{ flex:1 1 auto; min-width:0; }
+      .header-right{ flex:0 0 260px; display:flex; justify-content:flex-end; }
       .brief-title { margin: 0 0 6px 0; font-size: 22px; font-weight: 700; }
       .brief-desc { margin: 6px 0 0 0; color: var(--muted); white-space: pre-wrap; }
+      .date-input{ width: 260px; height: 40px; padding: 8px 12px; border:1px solid var(--input-border); border-radius: var(--radius-sm); background:#fff; color:var(--text); }
       .status { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; margin-top: 12px; }
       .status-draft { background: #e9f2ff; color: #163b6b; }
       .status-completed { background: #e8fff2; color: #046c4e; }
@@ -49,6 +53,7 @@
       .block-desc { margin: 0 0 12px 0; color: var(--muted); white-space: pre-wrap; font-size: 13px; }
 
       .fields-grid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--gap-fields); }
+      .header-contacts-grid{ grid-template-columns: repeat(4, minmax(0,1fr)); }
       .q { margin: 0; }
       .q.q--full{ grid-column: 1 / -1; }
       .q-label { display:block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
@@ -100,10 +105,17 @@
       {% endif %}
       <div class="content">
       <header class="brief-header">
-        <h1 class="brief-title">{{ brief.title }}</h1>
-        {% if brief.description %}
-          <p class="brief-desc">{{ brief.description }}</p>
-        {% endif %}
+        <div class="header-row">
+          <div class="header-left">
+            <h1 class="brief-title">{{ brief.title }}</h1>
+            {% if brief.description %}
+              <p class="brief-desc">{{ brief.description }}</p>
+            {% endif %}
+          </div>
+          <div class="header-right">
+            <input class="date-input" type="text" readonly value="{{ brief.created_at|date:"d.m.Y" }}" />
+          </div>
+        </div>
 
         {% if brief.status == brief.Status.COMPLETED %}
           <div class="status status-completed">Завершён</div>
@@ -111,6 +123,72 @@
           <div class="status status-draft">Черновик</div>
         {% endif %}
       </header>
+
+      {% if header_questions.fio or header_questions.phones or header_questions.email or header_questions.current_site %}
+      <section class="block">
+        <div class="fields-grid header-contacts-grid">
+          {% if header_questions.fio %}
+          <div class="q">
+            <label class="q-label" for="q-{{ header_questions.fio.id }}">{{ header_questions.fio.label }}</label>
+            <input
+              id="q-{{ header_questions.fio.id }}"
+              type="text"
+              data-question-id="{{ header_questions.fio.id }}"
+              data-question-type="{{ header_questions.fio.type }}"
+              placeholder="{{ header_questions.fio.placeholder }}"
+              value="{{ answers_by_question_id|get_item:header_questions.fio.id|default_if_none:header_questions.fio.default_value|default_if_none:'' }}"
+              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+            />
+          </div>
+          {% endif %}
+
+          {% if header_questions.phones %}
+          <div class="q">
+            <label class="q-label" for="q-{{ header_questions.phones.id }}">{{ header_questions.phones.label }}</label>
+            <input
+              id="q-{{ header_questions.phones.id }}"
+              type="text"
+              data-question-id="{{ header_questions.phones.id }}"
+              data-question-type="{{ header_questions.phones.type }}"
+              placeholder="{{ header_questions.phones.placeholder }}"
+              value="{{ answers_by_question_id|get_item:header_questions.phones.id|default_if_none:header_questions.phones.default_value|default_if_none:'' }}"
+              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+            />
+          </div>
+          {% endif %}
+
+          {% if header_questions.email %}
+          <div class="q">
+            <label class="q-label" for="q-{{ header_questions.email.id }}">{{ header_questions.email.label }}</label>
+            <input
+              id="q-{{ header_questions.email.id }}"
+              type="email"
+              data-question-id="{{ header_questions.email.id }}"
+              data-question-type="{{ header_questions.email.type }}"
+              placeholder="{{ header_questions.email.placeholder }}"
+              value="{{ answers_by_question_id|get_item:header_questions.email.id|default_if_none:header_questions.email.default_value|default_if_none:'' }}"
+              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+            />
+          </div>
+          {% endif %}
+
+          {% if header_questions.current_site %}
+          <div class="q">
+            <label class="q-label" for="q-{{ header_questions.current_site.id }}">{{ header_questions.current_site.label }}</label>
+            <input
+              id="q-{{ header_questions.current_site.id }}"
+              type="text"
+              data-question-id="{{ header_questions.current_site.id }}"
+              data-question-type="{{ header_questions.current_site.type }}"
+              placeholder="{{ header_questions.current_site.placeholder }}"
+              value="{{ answers_by_question_id|get_item:header_questions.current_site.id|default_if_none:header_questions.current_site.default_value|default_if_none:'' }}"
+              {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+            />
+          </div>
+          {% endif %}
+        </div>
+      </section>
+      {% endif %}
 
       <div id="submittedNotice" class="notice">Форма отправлена. Спасибо!</div>
 
@@ -123,6 +201,7 @@
 
           <div class="fields-grid">
           {% for q in block.questions.all %}
+            {% if not q.id in header_question_ids %}
             <div class="q {% if q.type == q.QuestionType.TEXT %}q--full{% endif %}">
               <label class="q-label" for="q-{{ q.id }}">{{ q.label }}</label>
 
@@ -190,6 +269,7 @@
                 <div class="q-help">{{ q.placeholder }}</div>
               {% endif %}
             </div>
+            {% endif %}
           {% endfor %}
           </div>
         </section>

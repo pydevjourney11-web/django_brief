@@ -109,6 +109,77 @@ def admin_brief_choose_template(request: HttpRequest) -> HttpResponse:
     return render(request, "admin/briefs/brief/choose_template.html", context)
 
 
+@staff_member_required
+def admin_brief_quick_create(request: HttpRequest) -> HttpResponse:
+    context = {**admin.site.each_context(request), "title": "Быстро создать бриф"}
+    if request.method == "POST":
+        title = (request.POST.get("title") or "").strip()
+        description = (request.POST.get("description") or "").strip()
+        include_contacts = request.POST.get("include_contacts") == "on"
+
+        if not title:
+            messages.error(request, "Введите название брифа")
+            return render(request, "admin/briefs/brief/quick_create.html", context)
+
+        with transaction.atomic():
+            brief = Brief.objects.create(title=title, description=description, is_template=False)
+
+            pos = 1
+            if include_contacts:
+                block = BriefBlock.objects.create(
+                    brief=brief,
+                    title="Контакты",
+                    description="Контактные данные заказчика",
+                    position=pos,
+                )
+                pos += 1
+                BriefQuestion.objects.bulk_create(
+                    [
+                        BriefQuestion(
+                            block=block,
+                            position=1,
+                            name="fio",
+                            type=BriefQuestion.QuestionType.STRING,
+                            label="Фамилия Имя Отчество",
+                            placeholder="Иванов Иван Иванович",
+                            webhook_variable_name="fio",
+                        ),
+                        BriefQuestion(
+                            block=block,
+                            position=2,
+                            name="phones",
+                            type=BriefQuestion.QuestionType.STRING,
+                            label="Телефоны",
+                            placeholder="+7 900 000-00-00",
+                            webhook_variable_name="phones",
+                        ),
+                        BriefQuestion(
+                            block=block,
+                            position=3,
+                            name="email",
+                            type=BriefQuestion.QuestionType.STRING,
+                            label="E-mail",
+                            placeholder="name@example.com",
+                            webhook_variable_name="email",
+                        ),
+                        BriefQuestion(
+                            block=block,
+                            position=4,
+                            name="current_site",
+                            type=BriefQuestion.QuestionType.STRING,
+                            label="Текущий сайт",
+                            placeholder="https://",
+                            webhook_variable_name="current_site",
+                        ),
+                    ]
+                )
+
+        messages.success(request, "Бриф создан")
+        return redirect(reverse("admin:briefs_brief_change", args=(brief.pk,)))
+
+    return render(request, "admin/briefs/brief/quick_create.html", context)
+
+
 @ensure_csrf_cookie
 def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
     brief = get_object_or_404(Brief, public_uuid=public_uuid, is_template=False)
@@ -123,13 +194,35 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         BriefAnswer.objects.filter(brief=brief).values_list("question_id", "value")
     )
 
-    # Safe logo URL: only if present in collected static files
+    # Promote common contact fields to the header if present
+    contact_slugs = ["fio", "phones", "email", "current_site"]
+    header_questions = {k: None for k in contact_slugs}
+    header_question_ids = []
+    qs = (
+        BriefQuestion.objects.filter(block__brief=brief, name__in=contact_slugs)
+        .select_related("block")
+        .order_by("block__position", "position", "id")
+    )
+    for q in qs:
+        if header_questions.get(q.name) is None:
+            header_questions[q.name] = q
+            header_question_ids.append(q.id)
+
+    # Safe logo URL: probe several common filenames
     logo_url = None
-    try:
-        if staticfiles_storage.exists("logo.png"):
-            logo_url = staticfiles_storage.url("logo.png")
-    except Exception:
-        logo_url = None
+    for candidate in [
+        "logo.png",
+        "logo.svg",
+        "Логотип без фона 2.png",
+        "img/logo.png",
+        "Img/logo.png",
+    ]:
+        try:
+            if staticfiles_storage.exists(candidate):
+                logo_url = staticfiles_storage.url(candidate)
+                break
+        except Exception:
+            continue
 
     return render(
         request,
@@ -138,6 +231,8 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "brief": brief,
             "blocks": blocks,
             "answers_by_question_id": answers_by_question_id,
+            "header_questions": header_questions,
+            "header_question_ids": header_question_ids,
             "logo_url": logo_url,
         },
     )

@@ -77,6 +77,29 @@ class BriefAdmin(admin.ModelAdmin):
 
     inlines = (BriefBlockInline,)
 
+    def get_fieldsets(self, request, obj=None):
+        if request.user.is_superuser:
+            return super().get_fieldsets(request, obj)
+        # Для менеджеров показываем только основное и публичную ссылку
+        return (
+            (
+                "Основное",
+                {
+                    "fields": (
+                        "title",
+                        "description",
+                        "status",
+                        "is_template",
+                        "source_template",
+                    )
+                },
+            ),
+            (
+                "Публичная ссылка",
+                {"fields": ("public_uuid",)},
+            ),
+        )
+
     @admin.display(description="Публичная ссылка")
     def public_link(self, obj: Brief) -> str:
         url = reverse("briefs:brief_fill", args=(obj.public_uuid,))

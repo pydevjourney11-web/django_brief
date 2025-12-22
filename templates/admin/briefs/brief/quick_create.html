@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div id="content-main">
+    <h1>{{ title }}</h1>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <fieldset class="module aligned">
+        <div class="form-row">
+          <label for="id_title">Название</label>
+          <input id="id_title" type="text" name="title" required placeholder="Например: Бриф на создание сайта" style="width: 420px;" />
+        </div>
+        <div class="form-row">
+          <label for="id_description">Описание</label>
+          <textarea id="id_description" name="description" rows="3" placeholder="Краткое описание назначения брифа" style="width: 420px;"></textarea>
+        </div>
+        <div class="form-row">
+          <label for="id_include_contacts">Добавить блок «Контакты»</label>
+          <input id="id_include_contacts" type="checkbox" name="include_contacts" checked />
+        </div>
+      </fieldset>
+
+      <div class="submit-row">
+        <input class="default" type="submit" value="Создать" />
+        <a class="button cancel-link" href="{% url 'admin:briefs_brief_changelist' %}">Отмена</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}
