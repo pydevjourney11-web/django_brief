@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ brief.title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <style>
       :root{
@@ -21,7 +24,7 @@
         --danger:#b42318;
         --radius:14px;
         --radius-sm:10px;
-        --container:1353px;
+        --container:1410px;
         --gap-block:30px;
         --gap-fields:30px;
       }
@@ -29,7 +32,7 @@
       html,body{height:100%;}
       body {
         margin:0; padding:32px 20px; background:var(--bg);
-        color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color:var(--text); font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       }
       .container { max-width: var(--container); margin: 0 auto; min-height: 928px; display:flex; flex-direction: column; }
       .content { flex: 1 0 auto; }
@@ -38,32 +41,48 @@
       .header-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
       .header-left{ flex:1 1 auto; min-width:0; }
       .header-right{ flex:0 0 260px; display:flex; justify-content:flex-end; }
-      .brief-title { margin: 0 0 6px 0; font-size: 22px; font-weight: 700; }
-      .brief-desc { margin: 6px 0 0 0; color: var(--muted); white-space: pre-wrap; }
-      .date-input{ width: 260px; height: 40px; padding: 8px 12px; border:1px solid var(--input-border); border-radius: var(--radius-sm); background:#fff; color:var(--text); }
+      .brief-title { margin: 0 0 6px 0; line-height: 1.1; }
+      .brief-title .main{ display:block; font-size: 50px; font-weight: 800; color: #3B507D; }
+      .brief-title .sub{ display:block; font-size: 20px; font-weight: 600; color: #3B507D; white-space: pre-wrap; }
+      .brief-lead{ margin-top: 8px; font-size: 16px; font-weight: 400; color: #3B507D; }
+      .date-input{ width: 330px; min-width:330px; height: 50px; padding: 16px; border:1px solid var(--input-border); border-radius: 4px; background:#fff; color:#3B507D; background-repeat:no-repeat; background-position:12px 50%; padding-left:40px; }
+      .date-input{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'><path d='M10.5 16.5H7.5C4.67157 16.5 3.25736 16.5 2.37868 15.6213C1.5 14.7427 1.5 13.3284 1.5 10.5V9C1.5 6.17157 1.5 4.75736 2.37868 3.87868C3.25736 3 4.67157 3 7.5 3H10.5C13.3284 3 14.7427 3 15.6213 3.87868C16.5 4.75736 16.5 6.17157 16.5 9V10.5C16.5 13.3284 16.5 14.7427 15.6213 15.6213C15.1314 16.1112 14.4751 16.328 13.5 16.4239' stroke='%233B507D' stroke-linecap='round'/><path d='M5.25 3V1.875' stroke='%233B507D' stroke-linecap='round'/><path d='M12.75 3V1.875' stroke='%233B507D' stroke-linecap='round'/><path d='M16.125 6.75H12.4688H8.0625M1.5 6.75H4.40625' stroke='%233B507D' stroke-linecap='round'/></svg>"); }
       .status { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; margin-top: 12px; }
       .status-draft { background: #e9f2ff; color: #163b6b; }
       .status-completed { background: #e8fff2; color: #046c4e; }
 
       .logo-wrap{ display:flex; justify-content:center; align-items:center; margin-bottom: 12px; }
-      .logo-wrap img{ max-height:48px; height:auto; width:auto; }
+      .logo-wrap img{ max-height:75px; height:auto; width:auto; }
 
       .block { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 18px; margin: var(--gap-block) 0; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
-      .block-title { margin: 0 0 8px 0; font-size: 16px; font-weight: 700; }
+      .block-title { margin: 0 0 16px 0; font-size: 26px; font-weight: 800; color:#3B507D; }
       .block-desc { margin: 0 0 12px 0; color: var(--muted); white-space: pre-wrap; font-size: 13px; }
 
       .fields-grid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--gap-fields); }
-      .header-contacts-grid{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .header-contacts-grid{
+        grid-template-columns: repeat(4, 330px);
+        justify-content: space-between;
+      }
       .q { margin: 0; }
       .q.q--full{ grid-column: 1 / -1; }
-      .q-label { display:block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+      .q-label { display:block; font-weight: 400; margin-bottom: 16px; font-size: 16px; color:#3B507D; }
       .q-help { color: var(--muted); font-size: 12px; margin-top: 6px; }
+      .with-icon{ background-repeat:no-repeat; background-position:12px 50%; background-size:18px 18px; padding-left:40px !important; }
+      /* Header contacts input overrides (Frame 105) */
+      .header-contacts-grid input[type="text"],
+      .header-contacts-grid input[type="email"],
+      .header-contacts-grid input[type="number"]{
+        height:50px; padding:16px; border-radius:4px; font-size:13px; color:#3B507D;
+      }
+      .header-contacts-grid input::placeholder{ color: rgba(59,80,125,.5); }
       input[type="text"], input[type="number"], textarea, select {
-        width: 100%; box-sizing: border-box; padding: 10px 12px;
-        border: 1px solid var(--input-border); border-radius: var(--radius-sm); font-size: 14px; background: #fff; color: var(--text);
+        width: 100%; box-sizing: border-box; padding: 16px;
+        height: 50px;
+        border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; background: #fff; color: var(--text);
       }
       input:focus, textarea:focus, select:focus { outline: none; border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(154,180,255,.25); }
-      textarea { min-height: 110px; resize: vertical; }
+      textarea { min-height: 96px; height: 96px; resize: vertical; }
+      ::placeholder{ color: rgba(59,80,125,.5); }
       select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #9aa4b2 50%), linear-gradient(135deg, #9aa4b2 50%, transparent 50%); background-position: calc(100% - 16px) calc(50% - 3px), calc(100% - 11px) calc(50% - 3px); background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; }
       .choices{ margin:0; }
       .choices__inner{ min-height: auto; border-radius: var(--radius-sm); border-color: var(--input-border); padding: 6px 8px; }
@@ -87,6 +106,7 @@
         .brief-title{ font-size:18px; }
         .block{ padding:14px; }
         .fields-grid{ grid-template-columns: 1fr; gap:16px; }
+        .header-contacts-grid{ grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -107,10 +127,14 @@
       <header class="brief-header">
         <div class="header-row">
           <div class="header-left">
-            <h1 class="brief-title">{{ brief.title }}</h1>
-            {% if brief.description %}
-              <p class="brief-desc">{{ brief.description }}</p>
-            {% endif %}
+            <h1 class="brief-title">
+              <span class="main">{{ header_title|default:brief.title }}</span>
+              {% if header_subtitle %}
+                <span class="sub">{{ header_subtitle }}</span>
+              {% elif brief.description %}
+                <span class="sub">{{ brief.description }}</span>
+              {% endif %}
+            </h1>
           </div>
           <div class="header-right">
             <input class="date-input" type="text" readonly value="{{ brief.created_at|date:"d.m.Y" }}" />
@@ -121,6 +145,9 @@
           <div class="status status-completed">Завершён</div>
         {% else %}
           <div class="status status-draft">Черновик</div>
+        {% endif %}
+        {% if header_description %}
+          <div class="brief-lead">{{ header_description }}</div>
         {% endif %}
       </header>
 
@@ -138,6 +165,8 @@
               placeholder="{{ header_questions.fio.placeholder }}"
               value="{{ answers_by_question_id|get_item:header_questions.fio.id|default_if_none:header_questions.fio.default_value|default_if_none:'' }}"
               {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+              class="with-icon"
+              {% if contact_icons.fio %}style="background-image:url('{{ contact_icons.fio }}');"{% endif %}
             />
           </div>
           {% endif %}
@@ -153,6 +182,8 @@
               placeholder="{{ header_questions.phones.placeholder }}"
               value="{{ answers_by_question_id|get_item:header_questions.phones.id|default_if_none:header_questions.phones.default_value|default_if_none:'' }}"
               {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+              class="with-icon"
+              {% if contact_icons.phones %}style="background-image:url('{{ contact_icons.phones }}');"{% endif %}
             />
           </div>
           {% endif %}
@@ -168,6 +199,8 @@
               placeholder="{{ header_questions.email.placeholder }}"
               value="{{ answers_by_question_id|get_item:header_questions.email.id|default_if_none:header_questions.email.default_value|default_if_none:'' }}"
               {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+              class="with-icon"
+              {% if contact_icons.email %}style="background-image:url('{{ contact_icons.email }}');"{% endif %}
             />
           </div>
           {% endif %}
@@ -183,6 +216,8 @@
               placeholder="{{ header_questions.current_site.placeholder }}"
               value="{{ answers_by_question_id|get_item:header_questions.current_site.id|default_if_none:header_questions.current_site.default_value|default_if_none:'' }}"
               {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+              class="with-icon"
+              {% if contact_icons.current_site %}style="background-image:url('{{ contact_icons.current_site }}');"{% endif %}
             />
           </div>
           {% endif %}

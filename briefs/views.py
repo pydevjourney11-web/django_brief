@@ -224,6 +224,52 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         except Exception:
             continue
 
+    # Optional contact icons
+    icon_candidates = {
+        "fio": [
+            "icons/user.svg",
+            "Img/icons/user.svg",
+            "icons/user.png",
+            "Img/icons/user.png",
+        ],
+        "phones": [
+            "icons/phone.svg",
+            "Img/icons/phone.svg",
+            "icons/phone.png",
+            "Img/icons/phone.png",
+        ],
+        "email": [
+            "icons/mail.svg",
+            "Img/icons/mail.svg",
+            "icons/email.svg",
+            "Img/icons/email.svg",
+            "icons/mail.png",
+            "Img/icons/mail.png",
+        ],
+        "current_site": [
+            "icons/globe.svg",
+            "Img/icons/globe.svg",
+            "icons/site.svg",
+            "Img/icons/site.svg",
+            "icons/globe.png",
+            "Img/icons/globe.png",
+        ],
+    }
+    contact_icons = {}
+    for key, paths in icon_candidates.items():
+        for p in paths:
+            try:
+                if staticfiles_storage.exists(p):
+                    contact_icons[key] = staticfiles_storage.url(p)
+                    break
+            except Exception:
+                continue
+
+    # Fixed header title/subtitle (can be adjusted later from settings)
+    header_title = "Бриф"
+    header_subtitle = "на создание сайта и контекстной рекламы"
+    header_description = "Данный опросный лист поможет более четко понять цели и задачи контекстной рекламы."
+
     return render(
         request,
         "briefs/fill_brief.html",
@@ -234,6 +280,10 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "header_questions": header_questions,
             "header_question_ids": header_question_ids,
             "logo_url": logo_url,
+            "contact_icons": contact_icons,
+            "header_title": header_title,
+            "header_subtitle": header_subtitle,
+            "header_description": header_description,
         },
     )
 
