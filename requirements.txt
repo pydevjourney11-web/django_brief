@@ -4,3 +4,4 @@ whitenoise>=6.7
 gunicorn>=21.2
 # Postgres driver (optional for prod)
 psycopg2-binary>=2.9
+dj-database-url>=2.2
