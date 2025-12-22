@@ -1,0 +1,329 @@
+{% load static briefs_extras %}
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ brief.title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <style>
+      :root{
+        --bg:#f4f8ff;
+        --card-bg:#ffffff;
+        --card-border:#e6eef8;
+        --text:#0f1b2d;
+        --muted:#6b7280;
+        --primary:#1e2f5c;
+        --primary-contrast:#ffffff;
+        --input-border:#d7dfec;
+        --input-focus:#9ab4ff;
+        --success:#057a55;
+        --danger:#b42318;
+        --radius:14px;
+        --radius-sm:10px;
+        --container:1353px;
+        --gap-block:30px;
+        --gap-fields:30px;
+      }
+
+      html,body{height:100%;}
+      body {
+        margin:0; padding:32px 20px; background:var(--bg);
+        color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+      .container { max-width: var(--container); margin: 0 auto; min-height: 928px; display:flex; flex-direction: column; }
+      .content { flex: 1 0 auto; }
+
+      .brief-header { margin-bottom: 20px; }
+      .brief-title { margin: 0 0 6px 0; font-size: 22px; font-weight: 700; }
+      .brief-desc { margin: 6px 0 0 0; color: var(--muted); white-space: pre-wrap; }
+      .status { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; margin-top: 12px; }
+      .status-draft { background: #e9f2ff; color: #163b6b; }
+      .status-completed { background: #e8fff2; color: #046c4e; }
+
+      .logo-wrap{ display:flex; justify-content:center; align-items:center; margin-bottom: 12px; }
+      .logo-wrap img{ max-height:48px; height:auto; width:auto; }
+
+      .block { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 18px; margin: var(--gap-block) 0; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+      .block-title { margin: 0 0 8px 0; font-size: 16px; font-weight: 700; }
+      .block-desc { margin: 0 0 12px 0; color: var(--muted); white-space: pre-wrap; font-size: 13px; }
+
+      .fields-grid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--gap-fields); }
+      .q { margin: 0; }
+      .q.q--full{ grid-column: 1 / -1; }
+      .q-label { display:block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+      .q-help { color: var(--muted); font-size: 12px; margin-top: 6px; }
+      input[type="text"], input[type="number"], textarea, select {
+        width: 100%; box-sizing: border-box; padding: 10px 12px;
+        border: 1px solid var(--input-border); border-radius: var(--radius-sm); font-size: 14px; background: #fff; color: var(--text);
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(154,180,255,.25); }
+      textarea { min-height: 110px; resize: vertical; }
+      select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #9aa4b2 50%), linear-gradient(135deg, #9aa4b2 50%, transparent 50%); background-position: calc(100% - 16px) calc(50% - 3px), calc(100% - 11px) calc(50% - 3px); background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; }
+      .choices{ margin:0; }
+      .choices__inner{ min-height: auto; border-radius: var(--radius-sm); border-color: var(--input-border); padding: 6px 8px; }
+      .choices.is-focused .choices__inner{ border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(154,180,255,.25); }
+
+      .actions { display: flex; gap: var(--gap-fields); align-items: center; justify-content: center; margin-top: 24px; }
+      .btn { width:220px; height:48px; padding:16px; border-radius: 40px; border: 1px solid #3B507D; background: #3B507D; color: #fff; cursor: pointer; font-weight: 600; line-height: 16px; display:inline-flex; align-items:center; justify-content:center; }
+      .btn:hover { filter: brightness(1.05); }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .muted { color: var(--muted); font-size: 13px; }
+
+      .notice { display:none; margin-bottom: 16px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 14px; }
+      .notice.success { display:block; background: #e8fff2; color: #046c4e; border:1px solid #b6f3ce; }
+
+      .save-indicator { font-size: 13px; color: #444; }
+      .save-indicator.error { color: var(--danger); }
+      .save-indicator.ok { color: var(--success); }
+
+      @media (max-width: 640px) {
+        body{ padding:20px 14px; }
+        .brief-title{ font-size:18px; }
+        .block{ padding:14px; }
+        .fields-grid{ grid-template-columns: 1fr; gap:16px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      class="container"
+      data-brief-uuid="{{ brief.public_uuid }}"
+      data-brief-completed="{% if brief.status == brief.Status.COMPLETED %}1{% else %}0{% endif %}"
+      data-autosave-url="{% url 'briefs:brief_autosave' brief.public_uuid %}"
+    >
+      <div class="logo-wrap">
+        <img src="{% static 'img/logo.png' %}" alt="Logo" />
+      </div>
+      <div class="content">
+      <header class="brief-header">
+        <h1 class="brief-title">{{ brief.title }}</h1>
+        {% if brief.description %}
+          <p class="brief-desc">{{ brief.description }}</p>
+        {% endif %}
+
+        {% if brief.status == brief.Status.COMPLETED %}
+          <div class="status status-completed">Завершён</div>
+        {% else %}
+          <div class="status status-draft">Черновик</div>
+        {% endif %}
+      </header>
+
+      <div id="submittedNotice" class="notice">Форма отправлена. Спасибо!</div>
+
+      {% for block in blocks %}
+        <section class="block">
+          <h2 class="block-title">{{ block.title }}</h2>
+          {% if block.description %}
+            <div class="block-desc">{{ block.description }}</div>
+          {% endif %}
+
+          <div class="fields-grid">
+          {% for q in block.questions.all %}
+            <div class="q {% if q.type == q.QuestionType.TEXT %}q--full{% endif %}">
+              <label class="q-label" for="q-{{ q.id }}">{{ q.label }}</label>
+
+              {% if q.type == q.QuestionType.STRING %}
+                <input
+                  id="q-{{ q.id }}"
+                  type="text"
+                  data-question-id="{{ q.id }}"
+                  data-question-type="{{ q.type }}"
+                  placeholder="{{ q.placeholder }}"
+                  value="{{ answers_by_question_id|get_item:q.id|default_if_none:q.default_value|default_if_none:'' }}"
+                  {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+                />
+
+              {% elif q.type == q.QuestionType.TEXT %}
+                <textarea
+                  id="q-{{ q.id }}"
+                  data-question-id="{{ q.id }}"
+                  data-question-type="{{ q.type }}"
+                  placeholder="{{ q.placeholder }}"
+                  {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+                >{{ answers_by_question_id|get_item:q.id|default_if_none:q.default_value|default_if_none:'' }}</textarea>
+
+              {% elif q.type == q.QuestionType.INT %}
+                <input
+                  id="q-{{ q.id }}"
+                  type="number"
+                  step="1"
+                  data-question-id="{{ q.id }}"
+                  data-question-type="{{ q.type }}"
+                  placeholder="{{ q.placeholder }}"
+                  value="{{ answers_by_question_id|get_item:q.id|default_if_none:q.default_value|default_if_none:'' }}"
+                  {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+                />
+
+              {% elif q.type == q.QuestionType.FLOAT %}
+                <input
+                  id="q-{{ q.id }}"
+                  type="number"
+                  step="any"
+                  data-question-id="{{ q.id }}"
+                  data-question-type="{{ q.type }}"
+                  placeholder="{{ q.placeholder }}"
+                  value="{{ answers_by_question_id|get_item:q.id|default_if_none:q.default_value|default_if_none:'' }}"
+                  {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+                />
+
+              {% elif q.type == q.QuestionType.SELECT %}
+                <select
+                  id="q-{{ q.id }}"
+                  data-question-id="{{ q.id }}"
+                  data-question-type="{{ q.type }}"
+                  {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}
+                >
+                  <option value="">-- выберите --</option>
+                  {% with current=answers_by_question_id|get_item:q.id|default_if_none:q.default_value %}
+                    {% for opt in q.options.all %}
+                      <option value="{{ opt.value }}" {% if current == opt.value %}selected{% endif %}>{{ opt.label }}</option>
+                    {% endfor %}
+                  {% endwith %}
+                </select>
+              {% endif %}
+
+              {% if q.placeholder %}
+                <div class="q-help">{{ q.placeholder }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+      </div>
+
+      <div class="actions">
+        <form method="post" action="{% url 'briefs:brief_submit' brief.public_uuid %}">
+          {% csrf_token %}
+          <button class="btn" type="submit" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %}>
+            Отправить бриф
+          </button>
+        </form>
+
+        <div id="saveIndicator" class="save-indicator muted">
+          {% if brief.status == brief.Status.COMPLETED %}
+            Редактирование отключено после отправки.
+          {% else %}
+            Изменения сохраняются автоматически.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+      // Vanilla JS: автосохранение после изменения поля (AJAX)
+      (function () {
+        const root = document.querySelector('[data-brief-uuid]');
+        if (!root) return;
+
+        const briefUuid = root.getAttribute('data-brief-uuid');
+        const isCompleted = root.getAttribute('data-brief-completed') === '1';
+
+        const saveIndicator = document.getElementById('saveIndicator');
+
+        function getCookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(';').shift();
+          return null;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        // Показ уведомления об отправке после редиректа ?submitted=1
+        (function showSubmittedBanner(){
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('submitted') === '1') {
+            const el = document.getElementById('submittedNotice');
+            if (el) {
+              el.classList.add('success');
+            }
+          }
+        })();
+
+        function setIndicator(text, cls) {
+          if (!saveIndicator) return;
+          saveIndicator.classList.remove('ok', 'error');
+          if (cls) saveIndicator.classList.add(cls);
+          saveIndicator.textContent = text;
+        }
+
+        async function autosave(questionId, questionType, rawValue) {
+          if (isCompleted) return;
+
+          setIndicator('Сохраняю...', null);
+
+          const payload = {
+            question_id: questionId,
+            question_type: questionType,
+            value: rawValue,
+          };
+
+          const resp = await fetch(root.getAttribute('data-autosave-url'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json().catch(() => null);
+          if (!resp.ok) {
+            setIndicator(data && data.error ? data.error : 'Ошибка сохранения', 'error');
+            return;
+          }
+
+          setIndicator('Сохранено', 'ok');
+          window.setTimeout(() => setIndicator('Изменения сохраняются автоматически.', null), 1200);
+        }
+
+        function getFieldValue(el) {
+          if (el.tagName === 'SELECT') return el.value;
+          return el.value;
+        }
+
+        // Debounce per question
+        const timers = new Map();
+
+        function scheduleSave(el) {
+          const qid = el.getAttribute('data-question-id');
+          const qtype = el.getAttribute('data-question-type');
+          if (!qid || !qtype) return;
+
+          const key = `${qid}`;
+          const value = getFieldValue(el);
+
+          if (timers.has(key)) window.clearTimeout(timers.get(key));
+          timers.set(
+            key,
+            window.setTimeout(() => autosave(Number(qid), qtype, value), 350)
+          );
+        }
+
+        // Улучшаем SELECT через Choices.js (только для не завершённых форм)
+        if (!isCompleted && window.Choices) {
+          document.querySelectorAll('select[data-question-id]')
+            .forEach((sel) => {
+              const inst = new Choices(sel, {
+                searchEnabled: false,
+                itemSelectText: '',
+                shouldSort: false,
+              });
+              // Сразу проставим текущее значение (Choices это учтёт)
+              if (sel.value) inst.setChoiceByValue(sel.value);
+            });
+        }
+
+        const fields = document.querySelectorAll('[data-question-id]');
+        fields.forEach((el) => {
+          el.addEventListener('change', () => scheduleSave(el));
+          el.addEventListener('input', () => scheduleSave(el));
+        });
+      })();
+    </script>
+  </body>
+</html>

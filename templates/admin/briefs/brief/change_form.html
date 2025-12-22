@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+
+  {% if original and original.pk %}
+    <li>
+      <form action="{% url 'briefs_admin:admin_brief_copy' original.pk %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="button">Скопировать бриф</button>
+      </form>
+    </li>
+
+    {% if original.is_template %}
+      <li>
+        <form action="{% url 'briefs_admin:admin_brief_create_from_template' original.pk %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="button">Создать из шаблона</button>
+        </form>
+      </li>
+    {% endif %}
+  {% endif %}
+{% endblock %}

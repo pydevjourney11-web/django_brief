@@ -1,0 +1,6 @@
+Django>=4.2,<5
+whitenoise>=6.7
+# For production WSGI server
+gunicorn>=21.2
+# Postgres driver (optional for prod)
+psycopg2-binary>=2.9

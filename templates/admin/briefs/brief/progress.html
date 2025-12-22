@@ -1,0 +1,52 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div id="content-main">
+    <h1>{{ title }}</h1>
+
+    <p>
+      <strong>Публичная ссылка:</strong>
+      <a href="{{ public_url }}" target="_blank" rel="noopener noreferrer">{{ public_url }}</a>
+    </p>
+
+    <p>
+      <strong>Статус:</strong>
+      {{ brief.status }}
+      {% if brief.completed_at %} ({{ brief.completed_at }}){% endif %}
+    </p>
+
+    <h2>Итого</h2>
+    <p>
+      Ответов: <strong>{{ answered_questions }}</strong> / <strong>{{ total_questions }}</strong>
+      ({{ percent }}%)
+    </p>
+
+    <h2>По блокам</h2>
+    <table class="adminlist" style="width:100%;">
+      <thead>
+        <tr>
+          <th>Блок</th>
+          <th style="width:160px;">Ответов</th>
+          <th style="width:120px;">%</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in block_rows %}
+          <tr>
+            <td>{{ row.block.title }}</td>
+            <td>{{ row.answered }} / {{ row.total }}</td>
+            <td>{{ row.percent }}%</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3">Нет блоков</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p style="margin-top: 18px;">
+      <a class="button" href="{% url 'admin:briefs_brief_change' brief.id %}">Назад к брифу</a>
+    </p>
+  </div>
+{% endblock %}
