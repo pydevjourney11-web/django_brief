@@ -196,7 +196,6 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         BriefAnswer.objects.filter(brief=brief).values_list("question_id", "value")
     )
 
-    # Promote common contact fields to the header if present
     contact_slugs = ["fio", "phones", "email", "current_site"]
     header_questions = {k: None for k in contact_slugs}
     header_question_ids = []
@@ -210,7 +209,6 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             header_questions[q.name] = q
             header_question_ids.append(q.id)
 
-    # Safe logo URL: probe several common filenames (use finders for dev)
     logo_url = None
     for candidate in [
         "logo.png",
@@ -225,14 +223,12 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             if finders.find(candidate):
                 logo_url = static(candidate)
                 break
-            # Fallback to storage if running with collected statics
             if staticfiles_storage.exists(candidate):
                 logo_url = staticfiles_storage.url(candidate)
                 break
         except Exception:
             continue
 
-    # Optional contact icons
     icon_candidates = {
         "fio": [
             "icons/user.svg",
@@ -310,7 +306,6 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             except Exception:
                 continue
 
-    # Determine grid columns for each block (short questions per row)
     block_cols = {}
     multiple_select_ids = set()
     for block in blocks:
@@ -319,7 +314,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             if q.id in header_question_ids:
                 continue
             if q.type == BriefQuestion.QuestionType.TEXT:
-                continue  # full width
+                continue
             if q.type == BriefQuestion.QuestionType.SELECT and getattr(q, "is_multiple", False):
                 multiple_select_ids.add(q.id)
             short_count += 1
@@ -330,7 +325,6 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             cols = 2
         block_cols[block.id] = cols
 
-    # Parse stored JSON arrays for multiple-select questions
     for qid in list(answers_by_question_id.keys()):
         if qid in multiple_select_ids:
             raw = answers_by_question_id.get(qid)
@@ -341,15 +335,12 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
                 except Exception:
                     pass
 
-    # Fixed header title/subtitle (can be adjusted later from settings)
     header_title = "Бриф"
     header_subtitle = "на создание сайта\nи контекстной рекламы"
     header_description = "Данный опросный лист поможет более четко понять цели и задачи контекстной рекламы."
 
-    # Submitted/success state flag for rendering a success banner/block
     is_submitted = (request.GET.get("submitted") == "1") or (brief.status == Brief.Status.COMPLETED)
 
-    # Calendar icon for date input (optional asset in static/Img/img)
     calendar_icon_url = None
     for p in [
         "calendar-minimalistic-svgrepo-com 1.svg",
@@ -448,21 +439,17 @@ def brief_autosave(request: HttpRequest, public_uuid) -> JsonResponse:
             if normalized is None:
                 pass
             else:
-                # Expect list of values; if string, try to parse JSON
                 if isinstance(normalized, str):
                     try:
                         normalized = json.loads(normalized)
                     except Exception:
-                        # fall back to single item list
                         normalized = [normalized]
                 if not isinstance(normalized, list):
                     return JsonResponse({"error": "Ожидается список значений"}, status=400)
-                # Validate values exist among options
                 allowed = set(BriefQuestionOption.objects.filter(question=question).values_list("value", flat=True))
                 for v in list(normalized):
                     if v not in allowed:
                         return JsonResponse({"error": f"Некорректный вариант: {v}"}, status=400)
-                # Store as JSON string
                 normalized = json.dumps(normalized, ensure_ascii=False)
         else:
             if normalized is None:

@@ -47,7 +47,7 @@
       .title-row .sub{ display:block; font-size: 20px; font-weight: 600; color: #3B507D; white-space: normal; line-height: 1.1; max-width: 560px; position:relative; top:2px; }
       .brief-lead{ margin-top: 20px; font-size: 16px; font-weight: 400; color: #3B507D; }
       .date-wrap{ position:relative; width:330px; min-width:330px; }
-      .date-input{ position:relative; z-index:1; width: 330px; min-width:330px; height: 50px; padding: 16px; padding-left:48px; padding-right:16px; border:1px solid var(--input-border); border-radius: 4px; background:#fff; color:#3B507D; font-size:13px; text-align:right; }
+      .date-input{ position:relative; z-index:1; width: 330px; min-width:330px; height: 48px; padding: 16px; padding-left:48px; padding-right:16px; border:1px solid var(--input-border); border-radius: 4px; background:#fff; color:#3B507D; font-size:13px; text-align:right; }
       .date-icon{ position:absolute; z-index:2; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; object-fit:contain; pointer-events:none; }
       .status { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; margin-top: 12px; }
       .status-draft { background: #e9f2ff; color: #163b6b; }
@@ -78,14 +78,12 @@
       .header-contacts-grid .input-wrap .q-icon{ position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; pointer-events:none; z-index:2; }
       .header-contacts-grid .input-wrap input{ position:relative; z-index:1; padding-left:42px !important; }
       .q-help { color: var(--muted); font-size: 12px; margin-top: 6px; }
-      /* Checkbox list for SELECT (multiple) with right-side description */
       .check-list{ display:grid; gap:14px; }
       .check-row{ display:grid; grid-template-columns: 22px 308px 1fr; column-gap:16px; align-items:start; padding:4px 0; cursor:pointer; }
       .check-row input[type="checkbox"]{ width:22px; height:22px; border:1px solid var(--input-border); border-radius:4px; margin:0; }
       .check-title{ font-size:13px; font-weight:600; opacity:.7; line-height:22px; color:#3B507D; }
       .check-desc{ font-size:12px; color: var(--muted); line-height:20px; }
       .with-icon{ background-repeat:no-repeat; background-position:16px 50%; background-size:18px 18px; padding-left:42px !important; }
-      /* Header contacts input overrides (Frame 105) */
       .header-contacts-grid input[type="text"],
       .header-contacts-grid input[type="email"],
       .header-contacts-grid input[type="number"]{
@@ -128,13 +126,16 @@
         .block{ padding:14px; }
         .fields-grid{ grid-template-columns: 1fr !important; row-gap:16px; column-gap:0; justify-content: initial; }
         .header-contacts-grid{ grid-template-columns: 1fr; }
-        /* Mobile adaptation for checkbox rows: title above description */
+        .header-row{ flex-direction: column; align-items: stretch; gap:12px; }
+        .header-left{ max-width: 100%; }
+        .header-right{ flex:0 0 auto; width:100%; justify-content:flex-start; }
+        .date-wrap{ width:100%; min-width:0; }
+        .date-input{ width:100%; min-width:0; }
         .check-row{ grid-template-columns:22px 1fr; }
         .check-title{ grid-column:2 / -1; }
         .check-desc{ grid-column:2 / -1; margin-top:4px; }
       }
 
-      /* Submitted modal */
       .submitted-overlay{ position:fixed; inset:0; background:rgba(15,27,45,.45); z-index:1000; display:none; }
       .submitted-dialog{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:540px; height:400px; background:#FFFFFF; border:1px solid var(--card-border); border-radius:4px; z-index:1001; padding:50px 40px; box-sizing:border-box; text-align:center; display:none; }
       .submitted-close{ position:absolute; top:12px; right:12px; background:transparent; border:0; font-size:20px; line-height:1; cursor:pointer; color:#3B507D; opacity:.7; }
@@ -186,7 +187,6 @@
           </div>
         </div>
 
-        {# Статус скрыт по требованию #}
         {% if header_description %}
           <div class="brief-lead">{{ header_description }}</div>
         {% endif %}
@@ -194,7 +194,6 @@
 
       <section class="block">
         <div class="fields-grid header-contacts-grid">
-          {# ФИО #}
           <div class="q">
             <label class="q-label" {% if header_questions.fio %}for="q-{{ header_questions.fio.id }}"{% endif %}>{{ header_questions.fio.label|default:"Фамилия Имя Отчество" }}</label>
             <div class="input-wrap">
@@ -211,7 +210,6 @@
             </div>
           </div>
 
-          {# Телефоны #}
           <div class="q">
             <label class="q-label" {% if header_questions.phones %}for="q-{{ header_questions.phones.id }}"{% endif %}>{{ header_questions.phones.label|default:"Телефоны" }}</label>
             <div class="input-wrap">
@@ -228,7 +226,6 @@
             </div>
           </div>
 
-          {# E-mail #}
           <div class="q">
             <label class="q-label" {% if header_questions.email %}for="q-{{ header_questions.email.id }}"{% endif %}>{{ header_questions.email.label|default:"E-mail" }}</label>
             <div class="input-wrap">
@@ -245,7 +242,6 @@
             </div>
           </div>
 
-          {# Текущий сайт #}
           <div class="q">
             <label class="q-label" {% if header_questions.current_site %}for="q-{{ header_questions.current_site.id }}"{% endif %}>{{ header_questions.current_site.label|default:"Текущий сайт" }}</label>
             <div class="input-wrap">
@@ -374,13 +370,9 @@
           </button>
         </form>
 
-        <div id="saveIndicator" class="save-indicator muted">
-          {% if brief.status == brief.Status.COMPLETED %}
-            Редактирование отключено после отправки.
-          {% else %}
-            Изменения сохраняются автоматически.
-          {% endif %}
-        </div>
+        {% if brief.status != brief.Status.COMPLETED %}
+        <div id="saveIndicator" class="save-indicator muted">Изменения сохраняются автоматически.</div>
+        {% endif %}
       </div>
     </div>
 

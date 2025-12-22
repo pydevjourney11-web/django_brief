@@ -69,17 +69,14 @@ DATABASES = {
     }
 }
 
-# Если задан DATABASE_URL (например, на Render/Heroku), используем его
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL and _dj_database_url is not None:
     try:
-        # Пробуем распарсить только если значение похоже на URL со схемой
         if "://" in DATABASE_URL and not DATABASE_URL.startswith("://"):
             DATABASES["default"] = _dj_database_url.parse(
                 DATABASE_URL, conn_max_age=600, ssl_require=False
             )
     except Exception:
-        # Некорректный DATABASE_URL — тихо игнорируем и остаёмся на дефолтной БД
         pass
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -107,7 +104,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [p for p in [BASE_DIR / "static", BASE_DIR / "Img", BASE_DIR / "img"] if p.exists()]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Trusted origins for CSRF (e.g., https://your-service.onrender.com)
 CSRF_TRUSTED_ORIGINS = [o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -5,4 +5,3 @@ gunicorn>=21.2
 # Postgres driver (optional for prod)
 psycopg2-binary>=2.9
 dj-database-url>=2.2
-django-browser-reload>=1.12
