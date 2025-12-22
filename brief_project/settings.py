@@ -65,7 +65,15 @@ DATABASES = {
 # Если задан DATABASE_URL (например, на Render/Heroku), используем его
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=False)
+    try:
+        # Пробуем распарсить только если значение похоже на URL со схемой
+        if "://" in DATABASE_URL and not DATABASE_URL.startswith("://"):
+            DATABASES["default"] = dj_database_url.parse(
+                DATABASE_URL, conn_max_age=600, ssl_require=False
+            )
+    except Exception:
+        # Некорректный DATABASE_URL — тихо игнорируем и остаёмся на дефолтной БД
+        pass
 
 AUTH_PASSWORD_VALIDATORS = [
     {
