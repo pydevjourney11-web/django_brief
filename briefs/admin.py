@@ -80,7 +80,7 @@ class BriefAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if request.user.is_superuser:
             return super().get_fieldsets(request, obj)
-        # Для менеджеров показываем только основное и публичную ссылку
+
         return (
             (
                 "Основное",

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 try:
     import dj_database_url as _dj_database_url
 except Exception:
@@ -9,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = [h for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -107,7 +108,25 @@ if DEBUG:
 else:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-CSRF_TRUSTED_ORIGINS = [o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o]
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
+
+# Render fallback: add service host/origin from RENDER_EXTERNAL_URL
+RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL")
+if RENDER_EXTERNAL_URL:
+    try:
+        parsed = urlparse(RENDER_EXTERNAL_URL)
+        host = parsed.hostname
+        if host and host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host)
+        if host and host.count(".") >= 1:
+            base = "." + host.split(".", 1)[-1]
+            if base not in ALLOWED_HOSTS:
+                ALLOWED_HOSTS.append(base)
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        if origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(origin)
+    except Exception:
+        pass
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
