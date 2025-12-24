@@ -122,6 +122,8 @@ class BriefQuestionInline(admin.TabularInline):
         "show_in_header",
         "header_position",
         "header_icon",
+        "repeater_schema",
+        "repeater_min_rows",
         "label",
         "placeholder",
         "default_value",

@@ -82,15 +82,16 @@
           <div class="fields-grid" data-cols="{{ block_cols|get_item:block.id }}">
           {% for q in block.questions.all %}
             {% if not q.id in header_question_ids %}
-            <div class="q {% if q.type == q.QuestionType.TEXT or q.is_multiple or q.name == 'competitors' %}q--full{% endif %}">
+            <div class="q {% if q.type == q.QuestionType.TEXT or q.is_multiple or q.repeater_schema %}q--full{% endif %}">
               <div class="q-inner">
                 <label class="q-label" for="q-{{ q.id }}">{{ q.label }}</label>
 
-              {% if q.name == 'competitors' %}
-                <div class="competitors-repeater" data-question-id="{{ q.id }}">
+              {% if q.repeater_schema %}
+                <div class="competitors-repeater" data-question-id="{{ q.id }}" data-min-rows="{{ q.repeater_min_rows|default:5 }}" style="--cols: {{ q.repeater_schema|length|default:2 }}">
                   <div class="comp-head">
-                    <div class="comp-col">Ссылка на сайт</div>
-                    <div class="comp-col">Комментарий</div>
+                    {% for col in q.repeater_schema %}
+                      <div class="comp-col" data-key="{{ col.key }}" {% if col.placeholder %}data-placeholder="{{ col.placeholder }}"{% endif %}>{{ col.label }}</div>
+                    {% endfor %}
                   </div>
                   <div class="comp-rows"></div>
                   <div class="comp-actions">

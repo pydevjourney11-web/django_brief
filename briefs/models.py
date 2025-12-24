@@ -102,6 +102,8 @@ class BriefQuestion(TimeStampedModel):
     show_in_header = models.BooleanField(default=False, verbose_name="Отобразить в шапке")
     header_position = models.PositiveIntegerField(default=0, verbose_name="Порядок в шапке")
     header_icon = models.CharField(max_length=255, blank=True, verbose_name="Иконка (путь к static)")
+    repeater_schema = models.JSONField(default=list, blank=True, verbose_name="Схема репитера (список колонок)")
+    repeater_min_rows = models.PositiveIntegerField(default=5, verbose_name="Мин. строк в репитере")
     label = models.CharField(max_length=255, verbose_name="Текст вопроса")
     placeholder = models.CharField(max_length=255, blank=True, verbose_name="Плейсхолдер")
     default_value = models.CharField(max_length=255, null=True, blank=True, verbose_name="Значение по умолчанию")
