@@ -56,69 +56,17 @@
 
       <section class="block">
         <div class="fields-grid header-contacts-grid">
-          <div class="q">
-            <label class="q-label" {% if header_questions.fio %}for="q-{{ header_questions.fio.id }}"{% endif %}>{{ header_questions.fio.label|default:"Фамилия Имя Отчество" }}</label>
-            <div class="input-wrap">
-              {% if contact_icons.fio %}
-                <img class="q-icon" src="{{ contact_icons.fio }}" alt="" />
-              {% else %}
-                <img class="q-icon" src="{% static 'user-svgrepo-com 1.png' %}" alt="" />
-              {% endif %}
-              {% if header_questions.fio %}
-                <input id="q-{{ header_questions.fio.id }}" type="text" data-question-id="{{ header_questions.fio.id }}" data-question-type="{{ header_questions.fio.type }}" placeholder="{{ header_questions.fio.label }}" value="{{ answers_by_question_id|get_item:header_questions.fio.id|default_if_none:header_questions.fio.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
-              {% else %}
-                <input type="text" placeholder="Фамилия Имя Отчество" />
-              {% endif %}
+          {% for item in header_items %}
+            {% with q=item.q icon=item.icon_url %}
+            <div class="q">
+              <label class="q-label" for="q-{{ q.id }}">{{ q.label }}</label>
+              <div class="input-wrap">
+                {% if icon %}<img class="q-icon" src="{{ icon }}" alt="" />{% endif %}
+                <input id="q-{{ q.id }}" type="text" data-question-id="{{ q.id }}" data-question-type="{{ q.type }}" placeholder="{{ q.label }}" value="{{ answers_by_question_id|get_item:q.id|default_if_none:q.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
+              </div>
             </div>
-          </div>
-
-          <div class="q">
-            <label class="q-label" {% if header_questions.phones %}for="q-{{ header_questions.phones.id }}"{% endif %}>{{ header_questions.phones.label|default:"Телефоны" }}</label>
-            <div class="input-wrap">
-              {% if contact_icons.phones %}
-                <img class="q-icon" src="{{ contact_icons.phones }}" alt="" />
-              {% else %}
-                <img class="q-icon" src="{% static 'user-svgrepo-com 1.png' %}" alt="" />
-              {% endif %}
-              {% if header_questions.phones %}
-                <input id="q-{{ header_questions.phones.id }}" type="text" data-question-id="{{ header_questions.phones.id }}" data-question-type="{{ header_questions.phones.type }}" placeholder="{{ header_questions.phones.label }}" value="{{ answers_by_question_id|get_item:header_questions.phones.id|default_if_none:header_questions.phones.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
-              {% else %}
-                <input type="text" placeholder="Телефоны" />
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="q">
-            <label class="q-label" {% if header_questions.email %}for="q-{{ header_questions.email.id }}"{% endif %}>{{ header_questions.email.label|default:"E-mail" }}</label>
-            <div class="input-wrap">
-              {% if contact_icons.email %}
-                <img class="q-icon" src="{{ contact_icons.email }}" alt="" />
-              {% else %}
-                <img class="q-icon" src="{% static 'mail-svgrepo-com 2.png' %}" alt="" />
-              {% endif %}
-              {% if header_questions.email %}
-                <input id="q-{{ header_questions.email.id }}" type="text" data-question-id="{{ header_questions.email.id }}" data-question-type="{{ header_questions.email.type }}" placeholder="{{ header_questions.email.label }}" value="{{ answers_by_question_id|get_item:header_questions.email.id|default_if_none:header_questions.email.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
-              {% else %}
-                <input type="text" placeholder="E-mail" />
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="q">
-            <label class="q-label" {% if header_questions.current_site %}for="q-{{ header_questions.current_site.id }}"{% endif %}>{{ header_questions.current_site.label|default:"Текущий сайт" }}</label>
-            <div class="input-wrap">
-              {% if contact_icons.current_site %}
-                <img class="q-icon" src="{{ contact_icons.current_site }}" alt="" />
-              {% else %}
-                <img class="q-icon" src="{% static 'web-svgrepo-com 1.png' %}" alt="" />
-              {% endif %}
-              {% if header_questions.current_site %}
-                <input id="q-{{ header_questions.current_site.id }}" type="text" data-question-id="{{ header_questions.current_site.id }}" data-question-type="{{ header_questions.current_site.type }}" placeholder="{{ header_questions.current_site.label }}" value="{{ answers_by_question_id|get_item:header_questions.current_site.id|default_if_none:header_questions.current_site.default_value|default_if_none:'' }}" {% if brief.status == brief.Status.COMPLETED %}disabled{% endif %} />
-              {% else %}
-                <input type="text" placeholder="Текущий сайт" />
-              {% endif %}
-            </div>
-          </div>
+            {% endwith %}
+          {% endfor %}
         </div>
       </section>
 

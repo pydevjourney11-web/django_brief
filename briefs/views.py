@@ -196,18 +196,7 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
         BriefAnswer.objects.filter(brief=brief).values_list("question_id", "value")
     )
 
-    contact_slugs = ["fio", "phones", "email", "current_site"]
-    header_questions = {k: None for k in contact_slugs}
     header_question_ids = []
-    qs = (
-        BriefQuestion.objects.filter(block__brief=brief, name__in=contact_slugs)
-        .select_related("block")
-        .order_by("block__position", "position", "id")
-    )
-    for q in qs:
-        if header_questions.get(q.name) is None:
-            header_questions[q.name] = q
-            header_question_ids.append(q.id)
 
     logo_url = None
     for candidate in [
@@ -293,18 +282,37 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "img/web-svgrepo-com 1.png",
         ],
     }
-    contact_icons = {}
-    for key, paths in icon_candidates.items():
-        for p in paths:
-            try:
-                if finders.find(p):
-                    contact_icons[key] = static(p)
-                    break
-                if staticfiles_storage.exists(p):
-                    contact_icons[key] = staticfiles_storage.url(p)
-                    break
-            except Exception:
-                continue
+
+    header_items = []
+    qs = (
+        BriefQuestion.objects.filter(block__brief=brief, show_in_header=True)
+        .select_related("block")
+        .order_by("header_position", "position", "id")
+    )
+    for q in qs:
+        icon_url = None
+        try:
+            header_icon = getattr(q, "header_icon", None)
+            if header_icon:
+                if finders.find(header_icon):
+                    icon_url = static(header_icon)
+                elif staticfiles_storage.exists(header_icon):
+                    icon_url = staticfiles_storage.url(header_icon)
+        except Exception:
+            pass
+        if not icon_url:
+            for p in icon_candidates.get(q.name, []):
+                try:
+                    if finders.find(p):
+                        icon_url = static(p)
+                        break
+                    if staticfiles_storage.exists(p):
+                        icon_url = staticfiles_storage.url(p)
+                        break
+                except Exception:
+                    continue
+        header_items.append({"q": q, "icon_url": icon_url})
+        header_question_ids.append(q.id)
 
     block_cols = {}
     multiple_select_ids = set()
@@ -368,10 +376,9 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             "blocks": blocks,
             "block_cols": block_cols,
             "answers_by_question_id": answers_by_question_id,
-            "header_questions": header_questions,
+            "header_items": header_items,
             "header_question_ids": header_question_ids,
             "logo_url": logo_url,
-            "contact_icons": contact_icons,
             "header_title": header_title,
             "header_subtitle": header_subtitle,
             "header_description": header_description,

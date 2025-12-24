@@ -119,6 +119,9 @@ class BriefQuestionInline(admin.TabularInline):
         "name",
         "type",
         "is_multiple",
+        "show_in_header",
+        "header_position",
+        "header_icon",
         "label",
         "placeholder",
         "default_value",
@@ -149,7 +152,7 @@ class BriefQuestionOptionInline(admin.TabularInline):
 
 @admin.register(BriefQuestion)
 class BriefQuestionAdmin(admin.ModelAdmin):
-    list_display = ("id", "block", "position", "name", "type", "is_multiple", "label")
+    list_display = ("id", "block", "position", "name", "type", "is_multiple", "show_in_header", "header_position", "label")
     list_filter = ("type", "block__brief")
     search_fields = ("name", "label", "block__title", "block__brief__title")
     list_editable = ("position",)
