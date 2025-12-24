@@ -74,3 +74,13 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#9
 .submitted-actions{display:flex;justify-content:center}
 .btn-back{width:220px;height:48px;border-radius:40px;padding:16px;background:#3B507D;color:#fff;font-weight:600;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
 @media (max-width:640px){.submitted-dialog{width:calc(100% - 32px);height:auto;padding:24px 16px}}
+
+.competitors-repeater{display:block}
+.competitors-repeater .comp-head{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0;font-size:13px;color:#3B507D;font-weight:700;opacity:.9;background:#f3f6fd;border:1px solid var(--card-border);border-bottom:0;border-radius:4px 4px 0 0;padding:10px 12px}
+.competitors-repeater .comp-rows{display:grid;grid-template-columns:1fr;row-gap:0;border:1px solid var(--card-border);border-radius:0 0 4px 4px;border-top:0}
+.competitors-repeater .comp-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px;border-top:1px solid var(--card-border)}
+.competitors-repeater .comp-row:first-child{border-top:0}
+.competitors-repeater .comp-input{height:44px;padding:12px 14px;border:1px solid var(--input-border);border-radius:4px;font-size:13px}
+.competitors-repeater .comp-actions{margin-top:12px}
+.competitors-repeater .add-comp-row{width:auto;padding:10px 16px;height:40px;border-radius:20px}
+@media (max-width:640px){.competitors-repeater .comp-head{grid-template-columns:1fr}.competitors-repeater .comp-row{grid-template-columns:1fr}}
