@@ -65,6 +65,7 @@ class BriefBlock(TimeStampedModel):
     brief = models.ForeignKey(Brief, on_delete=models.CASCADE, related_name="blocks", verbose_name="Бриф")
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     description = models.TextField(blank=True, verbose_name="Описание")
+    grid_columns = models.PositiveIntegerField(default=0, verbose_name="Колонки (0=авто, 1..3 вручную)")
     position = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:

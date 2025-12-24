@@ -326,11 +326,12 @@ def brief_fill(request: HttpRequest, public_uuid) -> HttpResponse:
             if q.type == BriefQuestion.QuestionType.SELECT and getattr(q, "is_multiple", False):
                 multiple_select_ids.add(q.id)
             short_count += 1
-        cols = 1
-        if short_count >= 6:
-            cols = 3
-        elif short_count >= 4:
-            cols = 2
+        cols = getattr(block, "grid_columns", 0) or 1
+        if cols == 0:
+            if short_count >= 6:
+                cols = 3
+            elif short_count >= 4:
+                cols = 2
         block_cols[block.id] = cols
 
     for qid in list(answers_by_question_id.keys()):

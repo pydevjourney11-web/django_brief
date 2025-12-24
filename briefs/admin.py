@@ -18,7 +18,7 @@ admin.site.index_title = "Главная админки"
 class BriefBlockInline(admin.TabularInline):
     model = BriefBlock
     extra = 0
-    fields = ("position", "title", "description")
+    fields = ("position", "title", "description", "grid_columns")
     ordering = ("position", "id")
 
 
@@ -132,10 +132,10 @@ class BriefQuestionInline(admin.TabularInline):
 
 @admin.register(BriefBlock)
 class BriefBlockAdmin(admin.ModelAdmin):
-    list_display = ("id", "brief", "position", "title")
+    list_display = ("id", "brief", "position", "title", "grid_columns")
     list_filter = ("brief",)
     search_fields = ("title", "brief__title")
-    list_editable = ("position",)
+    list_editable = ("position", "grid_columns")
     ordering = ("brief", "position", "id")
     readonly_fields = ("created_at", "updated_at")
     empty_value_display = "—"
