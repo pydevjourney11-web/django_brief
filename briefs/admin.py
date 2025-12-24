@@ -119,6 +119,8 @@ class BriefQuestionInline(admin.TabularInline):
         "name",
         "type",
         "is_multiple",
+        "choices_header_left",
+        "choices_header_right",
         "show_in_header",
         "header_position",
         "header_icon",

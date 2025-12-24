@@ -90,7 +90,11 @@
                 <div class="competitors-repeater" data-question-id="{{ q.id }}" data-min-rows="{{ q.repeater_min_rows|default:5 }}" style="--cols: {{ q.repeater_schema|length|default:2 }}">
                   <div class="comp-head">
                     {% for col in q.repeater_schema %}
-                      <div class="comp-col" data-key="{{ col.key }}" {% if col.placeholder %}data-placeholder="{{ col.placeholder }}"{% endif %}>{{ col.label }}</div>
+                      {% with label=col.label|default:col %}
+                        {% with k=col.key|default:label|slugify %}
+                          <div class="comp-col" data-key="{{ k }}" data-placeholder="{{ col.placeholder|default:'' }}">{{ label }}</div>
+                        {% endwith %}
+                      {% endwith %}
                     {% endfor %}
                   </div>
                   <div class="comp-rows"></div>
@@ -146,6 +150,13 @@
               {% elif q.type == q.QuestionType.SELECT %}
                 {% if q.is_multiple %}
                   {% with current=answers_by_question_id|get_item:q.id|default_if_none:q.default_value %}
+                  {% if q.choices_header_left or q.choices_header_right %}
+                  <div class="check-head">
+                    <div></div>
+                    <div class="check-head-left">{{ q.choices_header_left }}</div>
+                    <div class="check-head-right">{{ q.choices_header_right }}</div>
+                  </div>
+                  {% endif %}
                   <div class="check-list">
                     {% for opt in q.options.all %}
                       <label class="check-row">

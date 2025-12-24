@@ -23,11 +23,21 @@
     const hidden=wrap.querySelector('.competitors-hidden');
     const rowsWrap=wrap.querySelector('.comp-rows');
     const addBtn=wrap.querySelector('.add-comp-row');
-    const schema=Array.from(wrap.querySelectorAll('.comp-head .comp-col')).map(col=>({
-      key: col.getAttribute('data-key')||'',
-      label: col.textContent.trim(),
-      placeholder: col.getAttribute('data-placeholder')||''
-    }));
+    const toSlug=(s)=>String(s||'')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g,'-')
+      .replace(/^-+|-+$/g,'');
+    const schema=Array.from(wrap.querySelectorAll('.comp-head .comp-col')).map(col=>{
+      const label = col.textContent.trim();
+      const keyAttr = col.getAttribute('data-key')||'';
+      return {
+        key: keyAttr || toSlug(label),
+        label,
+        placeholder: col.getAttribute('data-placeholder')||''
+      };
+    });
     let data=[];
     const minRows=parseInt(wrap.getAttribute('data-min-rows')||'5',10);
     function blankRow(){const obj={};schema.forEach(c=>{obj[c.key]="";});return obj;}
