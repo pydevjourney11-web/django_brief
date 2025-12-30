@@ -176,6 +176,7 @@ class BriefQuestionOptionAdmin(admin.ModelAdmin):
     ordering = ("question", "position", "id")
     readonly_fields = ("created_at", "updated_at")
     empty_value_display = "—"
+    prepopulated_fields = {"value": ("label",)}
 
 
 @admin.register(BriefAnswer)
